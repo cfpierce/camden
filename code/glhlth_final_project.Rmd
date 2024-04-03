@@ -1,0 +1,177 @@
+---
+title: "Final Project: Examining Traffic Stop Outcomes in Durham, NC"
+author: "Libby Doyle and Charlotte Pierce"
+date: "2024-03-14"
+output: html_document
+---
+
+
+## Section 1: Introduction
+
+For this analysis, we are interested in understanding how police stops vary by race and gender in Durham. Specifically, we will be looking at outcomes such as whether they were searched and/or frisked and whether the stop resulted in a warning, a citation, or an arrest. We want to build a predictive model of a traffic stop’s outcome as a function of race, gender, and stop time of the person being stopped.
+
+This project utilizes data collected by the Stanford Open Policing Project. The Open Policing Project is a national repository of police vehicle and pedestrian stops and searches. This project specifically examines traffic stops in Durham County, North Carolina. The data was pulled from statewide North Carolina stop data available through the State Highway Patrol and cleaned by staff members at the Open Policing Project. The cleaned data file includes 326,024 traffic stops performed by Durham Police Department and the Durham County Sheriff’s Office between December 2001 to December 2015. Each observation in this dataset represents a single traffic stop. The dataset includes the date and time a stop occurred as well as the location and the county name where a stop occurred. While the vast majority of stops occurred within Durham County, a number of stops occurred outside of the county and will be filtered out for the purpose of this analysis. In addition, this dataset includes variables on the department name and an officer identification number. The dataset also includes select demographic information including age, race, and sex of the person stopped. Data was collected regarding the events at each stop, including whether the individual was searched or frisked, if contraband was found during that search, whether the individual was issued a warning, citation, or arrest, and what the reasoning behind the search/frisk was.
+
+## Section 2: Data
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages, echo = FALSE}
+library(tidyverse)
+library(haven)
+library(dataReporter) 
+library(here)
+
+
+```
+
+
+```{r codebook}
+
+# load data
+durhamdata <- readRDS(here::here("data", "yg821jf8611_nc_durham_2020_04_01.rds"))
+
+
+#keep relevant variables
+durhamdata <- durhamdata |> 
+  select(date:subject_sex, department_name:warning_issued, frisk_performed:search_conducted, search_basis: reason_for_stop)
+
+#codebook 
+
+attr(durhamdata$date, "shortDescription") <- "The date of the stop, in YYYY-MM-DD format."
+attr(durhamdata$time, "shortDescription") <- "The 24-hour time of the stop, in HH:MM format."
+attr(durhamdata$location, "shortDescription") <- "City and county"
+attr(durhamdata$subject_age, "shortDescription") <- "The age of the stopped subject. When date of birth is given, we calculate the age based on the stop date."
+attr(durhamdata$subject_race, "shortDescription") <- "The race of the stopped subject. Values are standardized to white, black, hispanic, asian/pacific islander, and other/unknown"
+attr(durhamdata$subject_sex, "shortDescription") <- "The recorded sex of the stopped subject."
+attr(durhamdata$department_name, "shortDescription") <- "Name of department or subdivision to which officer has been assigned."
+attr(durhamdata$type, "shortDescription") <- "Type of stop: vehicular or pedestrian"
+attr(durhamdata$arrest_made, "shortDescription") <- "Indicates whether an arrest made."
+attr(durhamdata$citation_issued, "shortDescription") <- "Indicates whether a citation was issued."
+attr(durhamdata$warning_issued, "shortDescription") <- "Indicates whether a warning was issued."
+attr(durhamdata$frisk_performed, "shortDescription") <- "Indicates whether a frisk was performed. This is technically different from a search, but departments will sometimes include frisks as a search type."
+attr(durhamdata$search_conducted, "shortDescription") <- "Indicates whether any type of search was conducted, i.e. driver, passenger, vehicle. Frisks are excluded where the department has provided resolution on both."
+attr(durhamdata$search_basis, "shortDescription") <- "This provides the reason for the search where provided and is categorized into k9, plain view, consent, probable cause, and other. If a serach occurred but the reason wasn't listed, we assume probable cause."
+attr(durhamdata$reason_for_frisk, "shortDescription") <- "A freeform text field indicating the reason for frisk where provided."
+attr(durhamdata$reason_for_search, "shortDescription") <- "A freeform text field indicating the reason for search where provided."
+attr(durhamdata$reason_for_stop, "shortDescription") <- "A freeform text field indicating the reason for the stop where provided."
+
+codebook <- makeCodebook(data = durhamdata, replace = TRUE) 
+
+```
+
+## Section 3: Data Analysis Plan
+
+**Key Variables**
+
+The key variables we will use to answer our question are:
+
+-   *subject_race:* a categorical variable, the options are black, hispanic, white, unknown, asian/pacific islander, and other
+-   *subject_sex:* a categorical variable, the options are male and female
+-   *time:* a continuous variable
+-   *arrest_made:* a TRUE/FALSE binary variable
+-   *warning_issued:* a TRUE/FALSE binary variable
+-   *citation_issued:* a TRUE/FALSE binary variable
+-   *frisk_performed:* a TRUE/FALSE binary variable
+-   *search_conducted:* a TRUE/FALSE binary variable
+
+**Exploratory Analysis**
+
+```{r summary stats}
+
+### Demographics and Outcome tables 
+# race table
+table_race <- table(durhamdata$subject_race)
+table_race
+
+# gender table
+table_sex <- table(durhamdata$subject_sex)
+table_sex
+
+# outcome arrest 
+table_arrest <- table(durhamdata$arrest_made)
+table_arrest
+
+# outcome warning 
+table_warning <- table(durhamdata$warning_issued)
+table_warning
+
+# outcome citation
+table_citation <- table(durhamdata$citation_issued)
+table_citation
+
+# outcome search 
+table_search <- table(durhamdata$search_conducted)
+table_search
+
+## race/gender graph 
+durhamdata |> 
+  filter(subject_sex == "male") |> 
+ggplot(aes(x = subject_race)) +
+  geom_bar() + 
+  labs(title = "Racial Breakdown of Men Stopped in Durham County")
+
+## race/gender graph 
+durhamdata |> 
+  filter(subject_sex == "female") |> 
+ggplot(aes(x = subject_race)) +
+  geom_bar() + 
+  labs(title = "Racial Breakdown of Women Stopped in Durham County")
+
+
+## Outcomes by race 
+
+## arrest by race
+durhamdata |> 
+  filter(arrest_made == "TRUE") |> 
+ggplot(aes(x = subject_race, y = arrest_made)) +
+  geom_col() + 
+  labs(title = "Arrest as a Result of Traffic Stop by Race")
+
+## citation by race
+durhamdata |> 
+  filter(citation_issued == "TRUE") |> 
+ggplot(aes(x = subject_race, y = citation_issued)) +
+  geom_col() +
+   labs(title = "Citation as a Result of Traffic Stop by Race")
+
+# warning by race
+durhamdata |> 
+  filter(warning_issued == "TRUE") |> 
+ggplot(aes(x = subject_race, y = warning_issued)) +
+  geom_col() +
+   labs(title = "Warning as a Result of Traffic Stop by Race")
+
+# Search by race 
+durhamdata |> 
+  filter(search_conducted == "TRUE") |> 
+ggplot(aes(x = subject_race, y = search_conducted)) +
+  geom_col() +
+   labs(title = "Search as a Result of Traffic Stop by Race")
+
+# 
+summarize(durhamdata$subject_race)
+
+# time stopped by race
+durhamdata |> 
+  filter(subject_race  %in%  c("black", "hispanic", "asian/pacific islander")) |> 
+ggplot(aes(x = time)) + 
+  geom_histogram(bins = 50, col= "white") +
+facet_wrap(~subject_race)
+
+
+
+```
+
+
+**Potential Methods**
+The method(s) that you believe will be useful in answering your question(s). (You can update these later as you work on your project.)
+
+We hope to use a machine learning model to predict the likelihood of a specific outcome to a traffic stop (i.e., search, citation, etc.) by demographic characteristics such as race and gender as well as potentially time of day. We think time of day may be important given visibility of driver at time of stop and might cosnider limiting the analysis to include only stops that occur during the daytime. 
+
+
+**Hypothesized Results**
+The descriptive statistics indicate that Black drivers are over-represented in the number of traffic stops made in Durham relative to their population size in the county. Similarly, male drivers make up nearly double the number of stops as female drivers. In looking at bar charts for stops by race and gender, black men and black women make up the highest proportion of stops. We anticipate that these patterns will hold in the machine learning models. 
+
+We expect the predictive model to show that drivers of color and male drivers are more likely to receive citations, arrests, and searches than warnings relative to white drivers and female drivers who we anticipate will receive more warnings. 
