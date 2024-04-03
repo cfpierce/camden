@@ -1,0 +1,143 @@
+---
+title: "Descriptive Tables"
+format: html
+---
+
+
+```{r}
+#| echo: false
+
+library(tidyverse)
+library(gt)
+
+# load data
+camden <- read.csv("/Users/libbydoyle/Library/CloudStorage/Box-Box/glhlth562_project/data/nj_camden_2020_04_01.csv")
+
+view(camden)
+
+```
+
+##info on dataset
+
+This dataset was retrieved through the Stanford Open Policing Project, which provides publicly available data on police  stops and searches in jurisdictions across the country. Camden, NJ is the location for this analysis. This dataset include data on 195,100 stops made by Camden Police between May 1, 2013 to June 13, 2018. The tables below provide descriptive statistics on relevant variables to this analysis.
+
+
+```{r}
+
+#filter to just vehicular stops 
+camden <- camden |> 
+  subset(type == "vehicular")
+
+
+# age
+
+summary(camden$subject_age)
+
+# do we want to put these into age buckets aligned with census?
+
+#race
+table(camden$subject_race, useNA = "always")
+
+# table
+race_table <- camden |> 
+  group_by(subject_race) |> 
+  count(subject_race) 
+  
+  gt(race_table, 
+     rowname_col = "row",
+     groupname_col = "group") |> 
+     cols_label(subject_race = md("***Subject Race***"), n = md("***Number of Responses***")) |> 
+  tab_options(heading.title.font.size = px(20)) 
+
+
+```
+
+```{r}
+# sex 
+table(camden$subject_sex, useNA = "always")
+
+# type of stop
+table(camden$type, useNA = "always")
+
+### OUTCOMES ###
+
+# arrest made
+table(camden$arrest_made, useNA = "always")
+#1,526 arrests
+
+# citation 
+table(camden$citation_issued, useNA = "always")
+# 47,677 citations
+
+# warnings 
+table(camden$warning_issued, useNA = "always")
+# 42,941 warnings
+
+# all outcomes
+table(camden$outcome, useNA = "always")
+
+  
+#stops per year
+  camden <- camden |> 
+  mutate(year = year(camden$date)) |> 
+   relocate(year, .after = date) 
+
+table(camden$year, useNA = "always")
+
+#
+
+```
+
+```{r}
+
+# logistic regression model for citation issued or not
+  set.seed(1122)
+
+camden_split  <- initial_split(camden)
+
+  # assign to office_train
+
+camden_train  <- training(camden)
+
+  # assign to office_test
+camden_test   <- testing(camden)
+
+# set model
+logreg_mod <-  
+  logistic_reg() |> 
+  set_engine("glm") |> 
+  set_mode("classification")
+
+# recipe 
+# outcome: citation issued
+# predictors: date, time, lat, lng, subject_age, subject_race, subject_sex, type, vehicle_color, vehicle_male, vehicle_model, vehicle_registration_state, vehicle_year 
+
+Create a recipe that updates the role of `episode_name` to not be a predictor, removes `air_date` as a predictor, turn all nominal into dummy, and removes all zero variance predictors. Visit https://recipes.tidymodels.org/reference/index.html to find the correct `step_()` functions.
+
+
+rec <-recipe(citation_issued ~ ., data = camden_train) |> 
+  update_role(episode_name, new_role = "id") |> 
+  step_rm(air_date) |> 
+  step_dummy(all_nominal(), -episode_name) |> 
+  step_zv(all_predictors())
+
+#create folds
+folds <- vfold_cv(camden_train, v = 5)
+
+folds
+
+
+logreg_results <- linreg_wflow |> 
+  fit_resamples(folds) 
+  
+  linreg_results
+
+
+
+
+```
+
+
+
+
+
