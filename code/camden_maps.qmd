@@ -16,9 +16,7 @@ library(dplyr)
 library(tidycensus)
 census_api_key("0702f85699449016b5b9de6482e5cc397e53b3fe", overwrite = TRUE)
 
-current_directory <- setwd("~/Desktop/Spring 2024/R DATA VIZ/GLHLTH562/FinalProject")
-
-camden_og <- read_csv("~/Desktop/Spring 2024/R DATA VIZ/GLHLTH562/FinalProject/data/nj_camden_2020_04_01.csv")
+camden <- read_csv(here::here("data", "nj_camden_2020_04_01.csv")
 
 ```
 
@@ -27,10 +25,18 @@ camden_og <- read_csv("~/Desktop/Spring 2024/R DATA VIZ/GLHLTH562/FinalProject/d
 camden_bounds <- c(lat_min = 39.875, lat_max = 39.961,
                    lng_min = -75.137, lng_max = -75.045)
 
-filtered_camden <- camden_og |> 
+filtered_camden <- camden |> 
   filter(!is.na(lat) & !is.na(lng)) |> 
   filter(lat >= camden_bounds["lat_min"] & lat <= camden_bounds["lat_max"] &
          lng >= camden_bounds["lng_min"] & lng <= camden_bounds["lng_max"])
+
+philly_bounds <- c(lat_min = 39.8719, lat_max = 40.1375,
+                   lng_min = -75.0426, lng_max = -75.2479)
+
+filtered_philly <- philly |> 
+  filter(!is.na(lat) & !is.na(lng)) |> 
+  filter(lat >= philly_bounds["lat_min"] & lat <= philly_bounds["lat_max"] &
+         lng >= philly_bounds["lng_min"] & lng <= philly_bounds["lng_max"])
 
 view(filtered_camden)
 
@@ -156,3 +162,5 @@ mapview(camden_tracts_subset)
 
 
 ```
+
+
