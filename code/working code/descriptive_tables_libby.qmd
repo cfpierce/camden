@@ -9,11 +9,15 @@ format: html
 
 library(tidyverse)
 library(gt)
+library(here)
+
 
 # load data
-camden <- read.csv("/Users/libbydoyle/Library/CloudStorage/Box-Box/glhlth562_project/data/nj_camden_2020_04_01.csv")
+camden <- readRDS(here::here("data", "camden.rds"))
 
-view(camden)
+# load philadelphia data 
+philly <- readRDS(here::here("data", "philadelphia.rds"))
+
 
 ```
 
