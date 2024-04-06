@@ -1,12 +1,57 @@
 ---
 title: "R Final Project"
 format: dashboard
+server: shiny
 ---
+
+```{r package setup}
+#| context: setup
+
+library(tidyverse)
+library(here)
+library(tidycensus)
+
+```
+
+
+```{r load data}
+#| context: setup
+camden_clean <- readRDS(here::here("data", "camden_clean.rds"))
+
+philly_clean <-  readRDS(here::here("data", "philly_clean.rds"))
+
+```
+
+
+# {.sidebar}
 
 ```{r}
 
+dateRangeInput("date", label, start =  "2014-01-01", end = "2017-12-31", min = "2014-01-01", max = "2017-12-31", format = "yyyy-mm-dd", startview = "month", weekstart = 0, language = "en", separator = " to ")
+  
+```
 
+
+
+```{r}
+ # | context: server
+ 
+camden_clean <- reactive({
+  
+  
+})
+
+#dots
+map1 <- leaflet(filtered_camden) |> 
+  addTiles() |> 
+  addCircleMarkers(lng = ~lng, lat = ~lat, radius = 1, fillOpacity = 0.5)
 
 
 ```
+
+#Plot 
+```{r}
+plotOutput('plot')
+```
+
 
