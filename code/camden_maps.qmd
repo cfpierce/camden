@@ -16,7 +16,9 @@ library(dplyr)
 library(tidycensus)
 census_api_key("0702f85699449016b5b9de6482e5cc397e53b3fe", overwrite = TRUE)
 
-camden <- read_csv(here::here("data", "nj_camden_2020_04_01.csv")
+# readRDS(here::here("data", "camden_clean.rds"))
+
+# readRDS(here::here("data", "philly_clean.rds"))
 
 ```
 
@@ -25,7 +27,7 @@ camden <- read_csv(here::here("data", "nj_camden_2020_04_01.csv")
 camden_bounds <- c(lat_min = 39.875, lat_max = 39.961,
                    lng_min = -75.137, lng_max = -75.045)
 
-filtered_camden <- camden |> 
+camden_clean <- camden_clean |> 
   filter(!is.na(lat) & !is.na(lng)) |> 
   filter(lat >= camden_bounds["lat_min"] & lat <= camden_bounds["lat_max"] &
          lng >= camden_bounds["lng_min"] & lng <= camden_bounds["lng_max"])
@@ -33,44 +35,37 @@ filtered_camden <- camden |>
 philly_bounds <- c(lat_min = 39.8719, lat_max = 40.1375,
                    lng_min = -75.0426, lng_max = -75.2479)
 
-filtered_philly <- philly |> 
+philly_clean <- philly_clean |> 
   filter(!is.na(lat) & !is.na(lng)) |> 
   filter(lat >= philly_bounds["lat_min"] & lat <= philly_bounds["lat_max"] &
          lng >= philly_bounds["lng_min"] & lng <= philly_bounds["lng_max"])
-
-view(filtered_camden)
-
-camden <- filtered_camden |> 
-  subset(type == "vehicular")
-
-
-sampled_camden <- camden |> 
-  sample_n(100)
 
 ```
 
 ```{r test maps}
 
-#HEATMAP
-leaflet(camden) |> 
-  addTiles() |> 
-  addHeatmap(~lng, ~lat)
-
 #dots
-leaflet(camden) |> 
+leaflet() |> 
   addTiles() |> 
-  addCircleMarkers(lng = ~lng, lat = ~lat, radius = 5, fillOpacity = 0.5)
+  addCircleMarkers(
+    data = camden_clean,
+    lng = ~lng, 
+    lat = ~lat, 
+    radius = 2, 
+    fillOpacity = 0.5
+    )
 
-#dots by racial groupings
-driver_black <- subset(camden, subject_race == "black")
-view(driver_black)
 
-leaflet(driver_black) |> 
-  addTiles() |> 
-  addCircleMarkers(lng = ~lng, lat = ~lat, radius = 0.25, fillOpacity = 0.25)
+
+
+
 
 
 ```
+
+
+
+
 
 ```{r census}
 
