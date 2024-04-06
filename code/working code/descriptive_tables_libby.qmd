@@ -15,9 +15,12 @@ library(here)
 # load data
 camden <- readRDS(here::here("data", "camden.rds"))
 
+table(camden$outcome, useNA = "always")
+
 # load philadelphia data 
 philly <- readRDS(here::here("data", "philadelphia.rds"))
 
+table(philly$outcome, useNA = "always")
 
 ```
 
