@@ -6,6 +6,7 @@ camden <- readRDS(here::here("data", "camden.rds"))
 
 philly <-  readRDS(here::here("data", "philadelphia.rds"))
 
+
 #philly wrangling
 philly_clean <- philly |> 
   select(date, lat, lng, subject_age, subject_race, subject_sex, type, outcome) |> 
@@ -25,7 +26,21 @@ philly_clean <- philly |>
   )) |> 
   relocate(age_group, .after = subject_age) |> 
   filter(date >= as.Date("2014-01-01") & date <= as.Date("2017-12-21")) |> 
+  mutate(outcome_recode = case_when(
+    outcome == "arrest" ~ "arrest",
+    is.na(outcome) ~ "no outcome"
+  )) |> 
   select(-type)
+
+philly_bounds <- c(lat_min = 39.8719, lat_max = 40.1375,
+                   lng_min = -75.0426, lng_max = -75.2479)
+
+philly_clean <- philly_clean |> 
+  filter(!is.na(lat) & !is.na(lng)) |> 
+  filter(lat >= philly_bounds["lat_min"] & lat <= philly_bounds["lat_max"] &
+           lng >= philly_bounds["lng_min"] & lng <= philly_bounds["lng_max"])
+
+saveRDS(philly_clean, file = "data/philly_clean.rds")
 
 
 #camden wrangling
@@ -47,7 +62,25 @@ camden_clean <- camden |>
   )) |> 
   relocate(age_group, .after = subject_age) |> 
   filter(date >= as.Date("2014-01-01") & date <= as.Date("2017-12-21")) |> 
+  mutate(outcome_recode = case_when(
+    outcome == "warning" ~ "warning",
+    outcome == "citation" ~ "citation",
+    outcome == "summons" ~ "summons",
+    outcome == "arrest" ~ "arrest",
+    is.na(outcome) ~ "no outcome"
+  )) |> 
   select(-type)
 
 
+camden_bounds <- c(lat_min = 39.875, lat_max = 39.961,
+                   lng_min = -75.137, lng_max = -75.045)
+
+camden_clean <- camden_clean |> 
+  filter(!is.na(lat) & !is.na(lng)) |> 
+  filter(lat >= camden_bounds["lat_min"] & lat <= camden_bounds["lat_max"] &
+           lng >= camden_bounds["lng_min"] & lng <= camden_bounds["lng_max"])
+
+
+
+saveRDS(camden_clean, file = "data/camden_clean.rds")
 

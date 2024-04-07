@@ -1,0 +1,77 @@
+---
+title: "Dashboard Maps"
+author: "Charlotte & Libby"
+format: dashboard
+server: shiny
+---
+
+```{r}
+#| context: setup
+
+library(tidyverse)
+library(shiny)
+library(sf)
+library(leaflet)
+
+
+camden_dashboard <-  readRDS(here::here("data", "camden_clean.rds"))
+
+```
+
+#  {.sidebar}
+
+```{r}
+checkboxGroupInput('outcome',label = h3("Pick Outcome"),
+                                      choices = list( "warning" = "warning",
+                                                      "citation" = "citation",
+                                                      "summons" = "summons",
+                                                      "arrest" = "arrest",
+                                                      "no outcome" = "no outcome"),
+                                      selected = NULL)
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2014, 2017), sep = NULL))
+
+
+```
+
+
+```{r}
+#| context: server
+
+
+  map_df <- reactive({
+    camden_dashboard |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(outcome_recode == input$outcome) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_df(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                     color = ifelse(map_df()$outcome_recode == "warning", "blue",
+                                    ifelse(map_df()$outcome_recode == "citation", "orange",
+                                           ifelse(map_df()$outcome_recode == "summons", "red",
+                                                  ifelse(map_df()$outcome_recode == "arrest", "purple", "gray")))))
+  
+
+})
+
+
+
+
+```
+
+# Camden Outcomes
+
+```{r}
+leafletOutput('map')
+```
