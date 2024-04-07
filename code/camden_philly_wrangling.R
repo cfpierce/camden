@@ -6,6 +6,7 @@ camden <- readRDS(here::here("data", "camden.rds"))
 
 philly <-  readRDS(here::here("data", "philadelphia.rds"))
 
+unique(camden_philly_clean$age_group)
 
 #philly wrangling
 philly_clean <- philly |> 
@@ -30,15 +31,12 @@ philly_clean <- philly |>
     outcome == "arrest" ~ "arrest",
     is.na(outcome) ~ "no outcome"
   )) |> 
-  select(-type)
-
-philly_bounds <- c(lat_min = 39.8719, lat_max = 40.1375,
-                   lng_min = -75.0426, lng_max = -75.2479)
+  select(-type) |> 
+  mutate(location = "philly") |> 
+  relocate(location, .after = lng)
 
 philly_clean <- philly_clean |> 
-  filter(!is.na(lat) & !is.na(lng)) |> 
-  filter(lat >= philly_bounds["lat_min"] & lat <= philly_bounds["lat_max"] &
-           lng >= philly_bounds["lng_min"] & lng <= philly_bounds["lng_max"])
+  filter(!is.na(lat) & !is.na(lng)) 
 
 saveRDS(philly_clean, file = "data/philly_clean.rds")
 
@@ -69,7 +67,9 @@ camden_clean <- camden |>
     outcome == "arrest" ~ "arrest",
     is.na(outcome) ~ "no outcome"
   )) |> 
-  select(-type)
+  select(-type) |> 
+  mutate(location = "camden") |> 
+  relocate(location, .after = lng)
 
 
 camden_bounds <- c(lat_min = 39.875, lat_max = 39.961,
@@ -83,4 +83,14 @@ camden_clean <- camden_clean |>
 
 
 saveRDS(camden_clean, file = "data/camden_clean.rds")
+
+#appending camden and philly datasets
+
+camden_philly_clean <- rbind(camden_clean, philly_clean)
+
+saveRDS(camden_philly_clean, file = "data/camden_philly_clean.rds")
+
+
+
+
 

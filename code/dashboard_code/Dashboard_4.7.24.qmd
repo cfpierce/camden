@@ -14,20 +14,19 @@ library(sf)
 library(leaflet)
 
 
-camden_dashboard <-  readRDS(here::here("data", "camden_clean.rds"))
+#camden_dashboard <-  readRDS(here::here("data", "camden_clean.rds"))
+combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
 ```
 
 #  {.sidebar}
 
 ```{r}
-checkboxGroupInput('outcome',label = h3("Pick Outcome"),
-                                      choices = list( "warning" = "warning",
-                                                      "citation" = "citation",
-                                                      "summons" = "summons",
-                                                      "arrest" = "arrest",
-                                                      "no outcome" = "no outcome"),
-                                      selected = NULL)
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = NULL)
+
 
 sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2014, 2017), sep = NULL))
 
@@ -38,9 +37,17 @@ sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(201
 ```{r}
 #| context: server
 
+#outcome map
+ui <- fluidPage(
+  selectInput("location", "Select Location:",
+              choices = c("Camden", "Philly"),
+              selected = "Philly"),
+  leafletOutput("map")
+)
 
-  map_df <- reactive({
-    camden_dashboard |> 
+map_df <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
        filter(year >= input$years[1] & year <= input$years[2]) |> 
        filter(outcome_recode == input$outcome) |> 
       filter(!is.na(lng) & !is.na(lat))  |> 
@@ -66,12 +73,112 @@ output$map <- renderLeaflet({
 })
 
 
+# race map? unsure if we need new maps for each of the tabs, this is where I got stuck
+
+ui <- fluidPage(
+  selectInput("location", "Select Location:",
+              choices = c("Camden", "Philly"),
+              selected = "Philly"),
+  leafletOutput("map_race")
+)
+
+map_race <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(race_recode == input$subject_race) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map_race <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_race(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                     color = ifelse(map_race()$race_recode == "White", "blue",
+                                    ifelse(map_race()$race_recode == "Black", "orange",
+                                           ifelse(map_race()$race_recode == "Hispanic", "red",
+                                                  ifelse(map_race()$race_recode == "Asian/Pacific Islander", "purple", "gray")))))
+  
+
+})
+
 
 
 ```
 
-# Camden Outcomes
+# Outcome of Stop
 
 ```{r}
 leafletOutput('map')
+```
+
+## {.sidebar}
+```{r}
+checkboxGroupInput('outcome',label = h3("Pick Outcome"),
+                                      choices = list( "warning" = "warning",
+                                                      "citation" = "citation",
+                                                      "summons" = "summons",
+                                                      "arrest" = "arrest",
+                                                      "no outcome" = "no outcome"),
+                                      selected = NULL)
+```
+
+# Racial Breakdown
+```{r}
+leafletOutput('map_race')
+```
+
+## {.sidebar}
+```{r}
+checkboxGroupInput('subject_race', label = h3("Select Race"),
+                                      choices = list("White" = "white",
+                                                     "Black" = "black",
+                                                     "Hispanic" = "hispanic",
+                                                     "Asian/Pacific Islander" = "asian/pacific islander"),
+
+                                      selected = NULL)
+
+```
+
+# Gender Breakdown
+```{r}
+
+```
+
+## {.sidebar}
+```{r}
+checkboxGroupInput('subject_sex', label = h3("Select Gender"),
+                                      choices = list("Male" = "male",
+                                                     "Female" = "female"),
+                                      selected = NULL)
+
+
+```
+
+# Age Breakdown
+```{r}
+
+```
+
+## {.sidebar}
+```{r}
+
+checkboxGroupInput('age_group', label = h3("Select Age Group"),
+                                      choices = list("Under 18" = "Under 18",
+                                                     "18-24" = "18-24",
+                                                     "25-34" = "25-34",
+                                                     "35-44" = "35-44",
+                                                     "45-54" = "45-54",
+                                                     "55-64" = "55-64",
+                                                     "65-74" = "65-74",
+                                                     "75 and over" = "75 and over"),
+                                      selected = NULL)
+
 ```
