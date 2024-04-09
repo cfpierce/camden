@@ -98,32 +98,32 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="shiny-options-group">
 <div class="checkbox">
 <label>
-<input type="checkbox" name="outcome" value="warning">
-<span>warning</span>
+<input type="checkbox" name="outcome" value="arrest" checked="checked">
+<span>Arrest</span>
 </label>
 </div>
 <div class="checkbox">
 <label>
 <input type="checkbox" name="outcome" value="citation">
-<span>citation</span>
-</label>
-</div>
-<div class="checkbox">
-<label>
-<input type="checkbox" name="outcome" value="summons">
-<span>summons</span>
-</label>
-</div>
-<div class="checkbox">
-<label>
-<input type="checkbox" name="outcome" value="arrest" checked="checked">
-<span>arrest</span>
+<span>Citation</span>
 </label>
 </div>
 <div class="checkbox">
 <label>
 <input type="checkbox" name="outcome" value="no outcome">
-<span>no outcome</span>
+<span>No outcome</span>
+</label>
+</div>
+<div class="checkbox">
+<label>
+<input type="checkbox" name="outcome" value="summons">
+<span>Summons</span>
+</label>
+</div>
+<div class="checkbox">
+<label>
+<input type="checkbox" name="outcome" value="warning">
+<span>Warning</span>
 </label>
 </div>
 </div>
@@ -165,8 +165,8 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="shiny-options-group">
 <div class="checkbox">
 <label>
-<input type="checkbox" name="race" value="white">
-<span>White</span>
+<input type="checkbox" name="race" value="asian/pacific islander" checked="checked">
+<span>Asian/Pacific Islander</span>
 </label>
 </div>
 <div class="checkbox">
@@ -183,8 +183,8 @@ grid-auto-rows: minmax(0, 1fr);">
 </div>
 <div class="checkbox">
 <label>
-<input type="checkbox" name="race" value="asian/pacific islander">
-<span>Asian/Pacific Islander</span>
+<input type="checkbox" name="race" value="white">
+<span>White</span>
 </label>
 </div>
 </div>
@@ -226,14 +226,14 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="shiny-options-group">
 <div class="checkbox">
 <label>
-<input type="checkbox" name="gender" value="male">
-<span>Male</span>
+<input type="checkbox" name="gender" value="female" checked="checked">
+<span>Female</span>
 </label>
 </div>
 <div class="checkbox">
 <label>
-<input type="checkbox" name="gender" value="female">
-<span>Female</span>
+<input type="checkbox" name="gender" value="male">
+<span>Male</span>
 </label>
 </div>
 </div>
@@ -275,7 +275,7 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="shiny-options-group">
 <div class="checkbox">
 <label>
-<input type="checkbox" name="age" value="Under 18">
+<input type="checkbox" name="age" value="Under 18" checked="checked">
 <span>Under 18</span>
 </label>
 </div>
@@ -366,7 +366,7 @@ bslib.Sidebar.initCollapsibleAll()
 <form class="well" role="complementary">
 <div class="form-group shiny-input-container no-baseline">
 <label class="control-label" id="years-label" for="years">Years</label>
-<input class="js-range-slider" id="years" data-skin="shiny" data-type="double" data-min="2014" data-max="2017" data-from="2014" data-to="2017" data-step="1" data-grid="true" data-grid-num="3" data-grid-snap="false" data-keyboard="true" data-drag-interval="true" data-data-type="number">
+<input class="js-range-slider" id="years" data-skin="shiny" data-type="double" data-min="2014" data-max="2017" data-from="2016" data-to="2017" data-step="1" data-grid="true" data-grid-num="3" data-grid-snap="false" data-keyboard="true" data-drag-interval="true" data-data-type="number">
 </div>
 </form>
 </div>
@@ -400,7 +400,7 @@ combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 map_df <- reactive({
     combined_dashboard |> 
     filter(location == input$location) |> 
-       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(date >= input$years[1] & year <= input$years[2]) |> 
        filter(outcome_recode == input$outcome) |> 
       filter(!is.na(lng) & !is.na(lat))  |> 
     

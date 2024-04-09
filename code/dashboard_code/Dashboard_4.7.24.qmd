@@ -30,7 +30,9 @@ checkboxGroupInput('location', label = h3("Pick Location"),
                                         selected = "camden")
 
 
-sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2014, 2017), sep = NULL))
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
+
+
 ```
 
 
@@ -42,7 +44,7 @@ sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(201
 map_df <- reactive({
     combined_dashboard |> 
     filter(location == input$location) |> 
-       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(date >= input$years[1] & year <= input$years[2]) |> 
        filter(outcome_recode == input$outcome) |> 
       filter(!is.na(lng) & !is.na(lat))  |> 
     
@@ -169,13 +171,16 @@ leafletOutput('map')
 
 ## {.sidebar}
 ```{r}
+
+
 checkboxGroupInput('outcome',label = h3("Pick Outcome"),
-                                      choices = list( "warning" = "warning",
-                                                      "citation" = "citation",
-                                                      "summons" = "summons",
-                                                      "arrest" = "arrest",
-                                                      "no outcome" = "no outcome"),
+                                      choices = list("Arrest" = "arrest",
+                                                     "Citation" = "citation",
+                                                     "No outcome" = "no outcome",
+                                                     "Summons" = "summons",
+                                                      "Warning" = "warning"),
                                       selected = "arrest")
+                                                     
 ```
 
 # Racial Breakdown
@@ -186,12 +191,11 @@ leafletOutput('map_race')
 ## {.sidebar}
 ```{r}
 checkboxGroupInput('race', label = h3("Select Race"),
-                                      choices = list("White" = "white",
+                                      choices = list("Asian/Pacific Islander" = "asian/pacific islander",
                                                      "Black" = "black",
                                                      "Hispanic" = "hispanic",
-                                                     "Asian/Pacific Islander" = "asian/pacific islander"),
-
-                                      selected = NULL)
+                                                     "White" = "white"),
+                                      selected = "asian/pacific islander")
 
 ```
 
@@ -203,9 +207,9 @@ leafletOutput('map_gender')
 ## {.sidebar}
 ```{r}
 checkboxGroupInput('gender', label = h3("Select Gender"),
-                                      choices = list("Male" = "male",
-                                                     "Female" = "female"),
-                                      selected = NULL)
+                                      choices = list("Female" = "female",
+                                                     "Male" = "male"),
+                                      selected = "female")
 
 
 ```
@@ -227,6 +231,6 @@ checkboxGroupInput('age', label = h3("Select Age Group"),
                                                      "55-64" = "55-64",
                                                      "65-74" = "65-74",
                                                      "75 and over" = "75 and over"),
-                                      selected = NULL)
+                                      selected = "Under 18")
 
 ```
