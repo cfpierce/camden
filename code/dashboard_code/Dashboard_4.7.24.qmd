@@ -2,7 +2,7 @@
 title: "Dashboard Maps"
 author: "Charlotte & Libby"
 format: dashboard
-theme: cosmo
+theme: united
 server: shiny
 ---
 
@@ -19,22 +19,6 @@ library(leaflet)
 combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
 ```
-
-#  {.sidebar}
-
-```{r}
-
-checkboxGroupInput('location', label = h3("Pick Location"),
-                                        choices = list( "Camden" = "camden",
-                                                        "Philly" = "philly"),
-                                        selected = "camden")
-
-
-sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
-
-
-```
-
 
 ```{r}
 #| context: server
@@ -163,15 +147,29 @@ output$map_age <- renderLeaflet({
 
 ```
 
+# Welcome to our dashboard!
+
+-   Intro of project/data source
+
+-   How to navigate
+
+-   Philly only has arrest data
+
+-   Significance of work/policy applications
+
 # Outcome of Stop
 
-```{r}
-leafletOutput('map')
-```
+##  {.sidebar}
 
-## {.sidebar}
 ```{r}
 
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
 
 checkboxGroupInput('outcome',label = h3("Pick Outcome"),
                                       choices = list("Arrest" = "arrest",
@@ -183,13 +181,25 @@ checkboxGroupInput('outcome',label = h3("Pick Outcome"),
                                                      
 ```
 
-# Racial Breakdown
+## Column
+
 ```{r}
-leafletOutput('map_race')
+leafletOutput('map')
 ```
 
-## {.sidebar}
+# Racial Breakdown
+
+##  {.sidebar}
+
 ```{r}
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
+
 checkboxGroupInput('race', label = h3("Select Race"),
                                       choices = list("Asian/Pacific Islander" = "asian/pacific islander",
                                                      "Black" = "black",
@@ -199,13 +209,25 @@ checkboxGroupInput('race', label = h3("Select Race"),
 
 ```
 
-# Gender Breakdown
+## Column
+
 ```{r}
-leafletOutput('map_gender')
+leafletOutput('map_race')
 ```
 
-## {.sidebar}
+# Gender Breakdown
+
+##  {.sidebar}
+
 ```{r}
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
+
 checkboxGroupInput('gender', label = h3("Select Gender"),
                                       choices = list("Female" = "female",
                                                      "Male" = "male"),
@@ -214,13 +236,25 @@ checkboxGroupInput('gender', label = h3("Select Gender"),
 
 ```
 
-# Age Breakdown
+## Column
+
 ```{r}
-leafletOutput('map_age')
+leafletOutput('map_gender')
 ```
 
-## {.sidebar}
+# Age Breakdown
+
+##  {.sidebar}
+
 ```{r}
+
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
 
 checkboxGroupInput('age', label = h3("Select Age Group"),
                                       choices = list("Under 18" = "Under 18",
@@ -233,4 +267,10 @@ checkboxGroupInput('age', label = h3("Select Age Group"),
                                                      "75 and over" = "75 and over"),
                                       selected = "Under 18")
 
+```
+
+## Column
+
+```{r}
+leafletOutput('map_age')
 ```
