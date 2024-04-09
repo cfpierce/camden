@@ -27,7 +27,7 @@ combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 checkboxGroupInput('location', label = h3("Pick Location"),
                                         choices = list( "Camden" = "camden",
                                                         "Philly" = "philly"),
-                                        selected = NULL)
+                                        selected = "camden")
 
 
 sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2014, 2017), sep = NULL))
@@ -45,6 +45,7 @@ map_df <- reactive({
        filter(year >= input$years[1] & year <= input$years[2]) |> 
        filter(outcome_recode == input$outcome) |> 
       filter(!is.na(lng) & !is.na(lat))  |> 
+    
      st_as_sf(coords = c('lng', 'lat')) |> 
      st_set_crs(4326)
   })
@@ -72,7 +73,7 @@ map_race <- reactive({
     combined_dashboard |> 
     filter(location == input$location) |> 
        filter(year >= input$years[1] & year <= input$years[2]) |> 
-       filter(race_recode == input$subject_race) |> 
+       filter(subject_race == input$race) |> 
       filter(!is.na(lng) & !is.na(lat))  |> 
      st_as_sf(coords = c('lng', 'lat')) |> 
      st_set_crs(4326)
@@ -87,15 +88,75 @@ output$map_race <- renderLeaflet({
     addCircleMarkers(data = map_race(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                     color = ifelse(map_race()$race_recode == "White", "blue",
-                                    ifelse(map_race()$race_recode == "Black", "orange",
-                                           ifelse(map_race()$race_recode == "Hispanic", "red",
-                                                  ifelse(map_race()$race_recode == "Asian/Pacific Islander", "purple", "gray")))))
+                     color = ifelse(map_race()$subject_race == "white", "blue",
+                                    ifelse(map_race()$subject_race == "black", "orange",
+                                           ifelse(map_race()$subject_race == "hispanic", "red",
+                                                  ifelse(map_race()$subject_race == "asian/pacific islander", "purple", "gray")))))
+  
   
 
 })
 
 
+#gender map
+
+map_gender <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(subject_sex == input$gender) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map_gender <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_gender(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                     color = ifelse(map_gender()$subject_sex == "male", "forestgreen",
+                                    ifelse(map_gender()$subject_sex == "female", "orange","gray")))
+
+})
+
+#age map
+
+map_age <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(age_group == input$age) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map_age <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_age(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                      color = ifelse(map_age()$age_group == "18-24", "blue",
+                                    ifelse(map_age()$age_group == "25-34", "orange",
+                                           ifelse(map_age()$age_group == "35-44", "red",
+                                                  ifelse(map_age()$age_group == "45-54", "purple",
+                                                  ifelse(map_age()$age_group == "55-64", "forestgreen",
+                                                 ifelse(map_age()$age_group == "65-74", "lightblue",     
+                                                 ifelse(map_age()$age_group == "75 and over", "pink",  
+                                                   ifelse(map_age()$age_group == "Under 18", "yellow",     
+                                                         "gray")))))))))
+  
+
+})
 
 
 ```
@@ -114,7 +175,7 @@ checkboxGroupInput('outcome',label = h3("Pick Outcome"),
                                                       "summons" = "summons",
                                                       "arrest" = "arrest",
                                                       "no outcome" = "no outcome"),
-                                      selected = NULL)
+                                      selected = "arrest")
 ```
 
 # Racial Breakdown
@@ -124,7 +185,7 @@ leafletOutput('map_race')
 
 ## {.sidebar}
 ```{r}
-checkboxGroupInput('subject_race', label = h3("Select Race"),
+checkboxGroupInput('race', label = h3("Select Race"),
                                       choices = list("White" = "white",
                                                      "Black" = "black",
                                                      "Hispanic" = "hispanic",
@@ -136,12 +197,12 @@ checkboxGroupInput('subject_race', label = h3("Select Race"),
 
 # Gender Breakdown
 ```{r}
-
+leafletOutput('map_gender')
 ```
 
 ## {.sidebar}
 ```{r}
-checkboxGroupInput('subject_sex', label = h3("Select Gender"),
+checkboxGroupInput('gender', label = h3("Select Gender"),
                                       choices = list("Male" = "male",
                                                      "Female" = "female"),
                                       selected = NULL)
@@ -151,13 +212,13 @@ checkboxGroupInput('subject_sex', label = h3("Select Gender"),
 
 # Age Breakdown
 ```{r}
-
+leafletOutput('map_age')
 ```
 
 ## {.sidebar}
 ```{r}
 
-checkboxGroupInput('age_group', label = h3("Select Age Group"),
+checkboxGroupInput('age', label = h3("Select Age Group"),
                                       choices = list("Under 18" = "Under 18",
                                                      "18-24" = "18-24",
                                                      "25-34" = "25-34",
