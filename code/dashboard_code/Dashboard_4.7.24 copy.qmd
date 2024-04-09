@@ -2,6 +2,7 @@
 title: "Dashboard Maps"
 author: "Charlotte & Libby"
 format: dashboard
+theme: cosmo
 server: shiny
 ---
 
@@ -37,12 +38,6 @@ sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(201
 #| context: server
 
 #outcome map
-ui <- fluidPage(
-  selectInput("location", "Select Location:",
-              choices = c("Camden", "Philly"),
-              selected = "Philly"),
-  leafletOutput("map")
-)
 
 map_df <- reactive({
     combined_dashboard |> 
@@ -72,13 +67,6 @@ output$map <- renderLeaflet({
 })
 
 #race map
-
-ui <- fluidPage(
-  selectInput("location", "Select Location:",
-              choices = c("Camden", "Philly"),
-              selected = "Philly"),
-  leafletOutput("map_race")
-)
 
 map_race <- reactive({
     combined_dashboard |> 

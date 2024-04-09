@@ -37,6 +37,7 @@ sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(201
 ```{r}
 #| context: server
 
+
 #outcome map
 ui <- fluidPage(
   selectInput("location", "Select Location:",
@@ -71,7 +72,6 @@ output$map <- renderLeaflet({
   
 
 })
-
 
 # race map? unsure if we need new maps for each of the tabs, this is where I got stuck
 
@@ -109,9 +109,9 @@ output$map_race <- renderLeaflet({
 
 })
 
-
-
 ```
+
+
 
 # Outcome of Stop
 
