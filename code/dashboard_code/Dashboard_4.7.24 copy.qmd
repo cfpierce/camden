@@ -1,8 +1,8 @@
 ---
-title: "Dashboard Maps"
+title: "Police Stops in Camden & Philadelphia"
 author: "Charlotte & Libby"
 format: dashboard
-theme: cosmo
+theme: united
 server: shiny
 ---
 
@@ -20,20 +20,6 @@ combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
 ```
 
-#  {.sidebar}
-
-```{r}
-
-checkboxGroupInput('location', label = h3("Pick Location"),
-                                        choices = list( "Camden" = "camden",
-                                                        "Philly" = "philly"),
-                                        selected = "camden")
-
-
-sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2014, 2017), sep = NULL))
-```
-
-
 ```{r}
 #| context: server
 
@@ -42,7 +28,7 @@ sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(201
 map_df <- reactive({
     combined_dashboard |> 
     filter(location == input$location) |> 
-       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(date >= input$years[1] & year <= input$years[2]) |> 
        filter(outcome_recode == input$outcome) |> 
       filter(!is.na(lng) & !is.na(lat))  |> 
     
@@ -161,62 +147,120 @@ output$map_age <- renderLeaflet({
 
 ```
 
+# Home
+
+## Row
+
+**Welcome to our dashboard!**
+
+## Row
+
+Going into this project, we were interested in understanding how police traffic stops varied by different demographic groups and identities. We sourced data from the [Stanford Open Policing Project](https://openpolicing.stanford.edu), which has both state- and city-wide data on traffic stops. Camden and Philadelphia, adjacent cities separated by the Delaware River, provided an opportunity for comparative analysis using maps that pinpoint stop location data by outcome, race, gender, and age.
+
+As you toggle through the dashboard, feel free to select any of the variables listed to understand the breakdowns along different demographic categories. Zooming in on the map may help clarify clusters of stops if you have selected multiple years or variables with a large concentration.
+
+Our goal with this dashboard is to help both policymakers and citizens understand what policing looks like in their communities. Accountability in policing is crucial, and information empowers us to act when we can see how inequities manifest, especially between different racial identities.
+
+**Note:** When exploring Philadelphia data, please note that there is only data available for "Arrest" and "No Outcome"
+
 # Outcome of Stop
+
+##  {.sidebar}
+
+```{r}
+
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
+
+checkboxGroupInput('outcome',label = h3("Pick Outcome"),
+                                      choices = list("Arrest" = "arrest",
+                                                     "Citation" = "citation",
+                                                     "No outcome" = "no outcome",
+                                                     "Summons" = "summons",
+                                                      "Warning" = "warning"),
+                                      selected = "arrest")
+                                                     
+```
+
+## Column
 
 ```{r}
 leafletOutput('map')
 ```
 
-## {.sidebar}
+# Racial Breakdown
+
+##  {.sidebar}
+
 ```{r}
-checkboxGroupInput('outcome',label = h3("Pick Outcome"),
-                                      choices = list( "warning" = "warning",
-                                                      "citation" = "citation",
-                                                      "summons" = "summons",
-                                                      "arrest" = "arrest",
-                                                      "no outcome" = "no outcome"),
-                                      selected = "arrest")
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
+
+checkboxGroupInput('race', label = h3("Select Race"),
+                                      choices = list("Asian/Pacific Islander" = "asian/pacific islander",
+                                                     "Black" = "black",
+                                                     "Hispanic" = "hispanic",
+                                                     "White" = "white"),
+                                      selected = "asian/pacific islander")
+
 ```
 
-# Racial Breakdown
+## Column
+
 ```{r}
 leafletOutput('map_race')
 ```
 
-## {.sidebar}
-```{r}
-checkboxGroupInput('race', label = h3("Select Race"),
-                                      choices = list("White" = "white",
-                                                     "Black" = "black",
-                                                     "Hispanic" = "hispanic",
-                                                     "Asian/Pacific Islander" = "asian/pacific islander"),
+# Gender Breakdown
 
-                                      selected = NULL)
+##  {.sidebar}
+
+```{r}
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
+
+checkboxGroupInput('gender', label = h3("Select Gender"),
+                                      choices = list("Female" = "female",
+                                                     "Male" = "male"),
+                                      selected = "female")
+
 
 ```
 
-# Gender Breakdown
+## Column
+
 ```{r}
 leafletOutput('map_gender')
 ```
 
-## {.sidebar}
-```{r}
-checkboxGroupInput('gender', label = h3("Select Gender"),
-                                      choices = list("Male" = "male",
-                                                     "Female" = "female"),
-                                      selected = NULL)
-
-
-```
-
 # Age Breakdown
-```{r}
-leafletOutput('map_age')
-```
 
-## {.sidebar}
+##  {.sidebar}
+
 ```{r}
+
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philly" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
 
 checkboxGroupInput('age', label = h3("Select Age Group"),
                                       choices = list("Under 18" = "Under 18",
@@ -227,6 +271,12 @@ checkboxGroupInput('age', label = h3("Select Age Group"),
                                                      "55-64" = "55-64",
                                                      "65-74" = "65-74",
                                                      "75 and over" = "75 and over"),
-                                      selected = NULL)
+                                      selected = "Under 18")
 
+```
+
+## Column
+
+```{r}
+leafletOutput('map_age')
 ```
