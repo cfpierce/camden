@@ -14,8 +14,6 @@ library(shiny)
 library(sf)
 library(leaflet)
 
-
-#camden_dashboard <-  readRDS(here::here("data", "camden_clean.rds"))
 combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
 ```
