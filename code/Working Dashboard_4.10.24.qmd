@@ -2,7 +2,7 @@
 title: "Dashboard Maps"
 author: "Charlotte & Libby"
 format: dashboard
-theme: cosmo
+theme: united
 server: shiny
 ---
 
@@ -161,11 +161,23 @@ output$map_age <- renderLeaflet({
 
 ```
 
-# Outcome of Stop
+# Home
 
-```{r}
-leafletOutput('map')
-```
+## Row
+
+**Welcome to our dashboard!**
+
+## Row
+
+Going into this project, we were interested in understanding how police traffic stops varied by different demographic groups and identities. We sourced data from the [Stanford Open Policing Project](https://openpolicing.stanford.edu), which has both state- and city-wide data on traffic stops. Camden and Philadelphia, adjacent cities separated by the Delaware River, provided an opportunity for comparative analysis using maps that pinpoint stop location data by outcome, race, gender, and age.
+
+As you toggle through the dashboard, feel free to select any of the variables listed to understand the breakdowns along different demographic categories. Zooming in on the map may help clarify clusters of stops if you have selected multiple years or variables with a large concentration.
+
+Our goal with this dashboard is to help both policymakers and citizens understand what policing looks like in their communities. Accountability in policing is crucial, and information empowers us to act when we can see how inequities manifest, especially between different racial identities.
+
+**Note:** When exploring Philadelphia data, please note that there is only data available for "Arrest" and "No Outcome"
+
+# Outcome of Stop
 
 ## {.sidebar}
 ```{r}
@@ -181,10 +193,12 @@ checkboxGroupInput('outcome',label = h3("Pick Outcome"),
                                                      
 ```
 
-# Racial Breakdown
+## Column
 ```{r}
-leafletOutput('map_race')
+leafletOutput('map')
 ```
+
+# Racial Breakdown
 
 ## {.sidebar}
 ```{r}
@@ -197,10 +211,12 @@ checkboxGroupInput('race', label = h3("Select Race"),
 
 ```
 
-# Gender Breakdown
+## Column
 ```{r}
-leafletOutput('map_gender')
+leafletOutput('map_race')
 ```
+
+# Gender Breakdown
 
 ## {.sidebar}
 ```{r}
@@ -212,10 +228,12 @@ checkboxGroupInput('gender', label = h3("Select Gender"),
 
 ```
 
-# Age Breakdown
+## Column
 ```{r}
-leafletOutput('map_age')
+leafletOutput('map_gender')
 ```
+
+# Age Breakdown
 
 ## {.sidebar}
 ```{r}
@@ -231,4 +249,9 @@ checkboxGroupInput('age', label = h3("Select Age Group"),
                                                      "75 and over" = "75 and over"),
                                       selected = "Under 18")
 
+```
+
+## Column
+```{r}
+leafletOutput('map_age')
 ```
