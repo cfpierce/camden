@@ -13,6 +13,7 @@ library(tidyverse)
 library(shiny)
 library(sf)
 library(leaflet)
+library(viridis)
 
 combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
@@ -59,10 +60,10 @@ output$map <- renderLeaflet({
     addCircleMarkers(data = map_df(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                     color = ifelse(map_df()$outcome_recode == "warning", "blue",
-                                    ifelse(map_df()$outcome_recode == "citation", "orange",
-                                           ifelse(map_df()$outcome_recode == "summons", "red",
-                                                  ifelse(map_df()$outcome_recode == "arrest", "purple", "gray")))))
+                     color = ifelse(map_df()$outcome_recode == "warning", "#f0f921",
+                                    ifelse(map_df()$outcome_recode == "citation", "#ed7953",
+                                           ifelse(map_df()$outcome_recode == "summons", "#9c179e",
+                                                  ifelse(map_df()$outcome_recode == "arrest", "#0d0887", "gray")))))
   
 
 })
@@ -88,10 +89,10 @@ output$map_race <- renderLeaflet({
     addCircleMarkers(data = map_race(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                     color = ifelse(map_race()$subject_race == "white", "blue",
-                                    ifelse(map_race()$subject_race == "black", "orange",
-                                           ifelse(map_race()$subject_race == "hispanic", "red",
-                                                  ifelse(map_race()$subject_race == "asian/pacific islander", "purple", "gray")))))
+                     color = ifelse(map_race()$subject_race == "white", "#fcfdbf",
+                                    ifelse(map_race()$subject_race == "black", "#f1605d",
+                                           ifelse(map_race()$subject_race == "hispanic", "#721f81",
+                                                  ifelse(map_race()$subject_race == "asian/pacific islander", "#000004", "gray")))))
   
   
 
@@ -119,8 +120,8 @@ output$map_gender <- renderLeaflet({
     addCircleMarkers(data = map_gender(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                     color = ifelse(map_gender()$subject_sex == "male", "forestgreen",
-                                    ifelse(map_gender()$subject_sex == "female", "orange","gray")))
+                     color = ifelse(map_gender()$subject_sex == "male", "#fde725",
+                                    ifelse(map_gender()$subject_sex == "female", "#440154","gray")))
 
 })
 
@@ -145,14 +146,14 @@ output$map_age <- renderLeaflet({
     addCircleMarkers(data = map_age(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                      color = ifelse(map_age()$age_group == "18-24", "blue",
-                                    ifelse(map_age()$age_group == "25-34", "orange",
-                                           ifelse(map_age()$age_group == "35-44", "red",
-                                                  ifelse(map_age()$age_group == "45-54", "purple",
-                                                  ifelse(map_age()$age_group == "55-64", "forestgreen",
-                                                 ifelse(map_age()$age_group == "65-74", "lightblue",     
-                                                 ifelse(map_age()$age_group == "75 and over", "pink",  
-                                                   ifelse(map_age()$age_group == "Under 18", "yellow",     
+                      color = ifelse(map_age()$age_group == "18-24", "#fac228",
+                                    ifelse(map_age()$age_group == "25-34", "#f57d15",
+                                           ifelse(map_age()$age_group == "35-44", "#d44842",
+                                                  ifelse(map_age()$age_group == "45-54", "#9f2a63",
+                                                  ifelse(map_age()$age_group == "55-64", "#65156e",
+                                                 ifelse(map_age()$age_group == "65-74", "#280b53",     
+                                                 ifelse(map_age()$age_group == "75 and over", "#000004",  
+                                                   ifelse(map_age()$age_group == "Under 18", "#fcffa4",     
                                                          "gray")))))))))
   
 
