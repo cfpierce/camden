@@ -456,9 +456,9 @@ output$map <- renderLeaflet({
     addCircleMarkers(data = map_df(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                     color = ifelse(map_df()$outcome_recode == "warning", "#f0f921",
-                                    ifelse(map_df()$outcome_recode == "citation", "#ed7953",
-                                           ifelse(map_df()$outcome_recode == "summons", "#9c179e",
+                     color = ifelse(map_df()$outcome_recode == "warning", "#f89540",
+                                    ifelse(map_df()$outcome_recode == "citation", "#cc4778",
+                                           ifelse(map_df()$outcome_recode == "summons", "#7e03a8",
                                                   ifelse(map_df()$outcome_recode == "arrest", "#0d0887", "gray")))))
   
 
@@ -485,10 +485,10 @@ output$map_race <- renderLeaflet({
     addCircleMarkers(data = map_race(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                     color = ifelse(map_race()$subject_race == "white", "#fcfdbf",
-                                    ifelse(map_race()$subject_race == "black", "#f1605d",
-                                           ifelse(map_race()$subject_race == "hispanic", "#721f81",
-                                                  ifelse(map_race()$subject_race == "asian/pacific islander", "#000004", "gray")))))
+                     color = ifelse(map_race()$subject_race == "white", "#5ec962",
+                                    ifelse(map_race()$subject_race == "black", "#21918c",
+                                           ifelse(map_race()$subject_race == "hispanic", "#3b528b",
+                                                  ifelse(map_race()$subject_race == "asian/pacific islander", "#440154", "gray")))))
   
   
 
@@ -516,7 +516,7 @@ output$map_gender <- renderLeaflet({
     addCircleMarkers(data = map_gender(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                     color = ifelse(map_gender()$subject_sex == "male", "#fde725",
+                     color = ifelse(map_gender()$subject_sex == "male", "#21918c",
                                     ifelse(map_gender()$subject_sex == "female", "#440154","gray")))
 
 })
@@ -542,14 +542,14 @@ output$map_age <- renderLeaflet({
     addCircleMarkers(data = map_age(), 
                      radius = 0.25, 
                      fillOpacity = 0.75,
-                      color = ifelse(map_age()$age_group == "18-24", "#fac228",
-                                    ifelse(map_age()$age_group == "25-34", "#f57d15",
-                                           ifelse(map_age()$age_group == "35-44", "#d44842",
-                                                  ifelse(map_age()$age_group == "45-54", "#9f2a63",
-                                                  ifelse(map_age()$age_group == "55-64", "#65156e",
-                                                 ifelse(map_age()$age_group == "65-74", "#280b53",     
-                                                 ifelse(map_age()$age_group == "75 and over", "#000004",  
-                                                   ifelse(map_age()$age_group == "Under 18", "#fcffa4",     
+                      color = ifelse(map_age()$age_group == "18-24", "#5ec962",
+                                    ifelse(map_age()$age_group == "25-34", "#28ae80",
+                                           ifelse(map_age()$age_group == "35-44", "#21918c",
+                                                  ifelse(map_age()$age_group == "45-54", "#2c728e",
+                                                  ifelse(map_age()$age_group == "55-64", "#3b528b",
+                                                 ifelse(map_age()$age_group == "65-74", "#472d7b",     
+                                                 ifelse(map_age()$age_group == "75 and over", "#440154",  
+                                                   ifelse(map_age()$age_group == "Under 18", "#addc30",     
                                                          "gray")))))))))
   
 
