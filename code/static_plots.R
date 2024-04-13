@@ -123,8 +123,8 @@ philly_stop <- bw_stop_count |>
 ggplot(camden_stop, aes(color = subject_race, y=per_100, x=year)) + 
   geom_line() + 
   geom_point() +
-  geom_text(aes(label = round(per_100, 2)), vjust = -1, hjust = 0.5, size = 3) + 
-  labs(x = "Year", y = "Stops per 100 Population", title = "Stops of Black and White Drivers in Camden per 100",  color = "Race/Ethnicity") +
+  geom_text(aes(label = round(per_100, 0)), vjust = -1, hjust = 0.5, size = 3) + 
+  labs(x = "Year", y = "Stops per 100 People", title = "Stops of Black and White Drivers in Camden per 100 People",  color = "Race/Ethnicity") +
   scale_fill_viridis_d() +  
   theme_minimal()
 
@@ -133,7 +133,7 @@ ggplot(camden_stop, aes(color = subject_race, y=per_100, x=year)) +
 ggplot(philly_stop, aes(color = subject_race, y=per_100, x=year)) + 
   geom_line() + 
   geom_point() +
-  geom_text(aes(label = round(per_100, 2)), vjust = -1, hjust = 0.5, size = 3) + 
-  labs(x = "Year", y = "Stops per 100 Population", title = "Stops of Black and White Drivers in Philadelphia per 100",  color = "Race/Ethnicity") +
+  geom_text(aes(label = round(per_100, 0)), vjust = -1, hjust = 0.5, size = 3) + 
+  labs(x = "Year", y = "Stops per 100 People", title = "Stops of Black and White Drivers in Philadelphia per 100 People",  color = "Race/Ethnicity") +
   scale_fill_viridis_d() +  
   theme_minimal()
