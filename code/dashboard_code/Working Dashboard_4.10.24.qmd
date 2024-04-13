@@ -16,6 +16,8 @@ library(leaflet)
 library(viridis)
 
 combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
+camden_race <- readRDS(here::here("data", "camden_race.rds"))
+
 
 ```
 
@@ -25,7 +27,7 @@ combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
 checkboxGroupInput('location', label = h3("Pick Location"),
                                         choices = list( "Camden" = "camden",
-                                                        "Philly" = "philly"),
+                                                        "Philadelphia" = "philly"),
                                         selected = "camden")
 
 
@@ -94,9 +96,9 @@ output$map_race <- renderLeaflet({
                                            ifelse(map_race()$subject_race == "hispanic", "#3b528b",
                                                   ifelse(map_race()$subject_race == "asian/pacific islander", "#440154", "gray")))))
   
-  
 
 })
+
 
 
 #gender map
@@ -124,6 +126,7 @@ output$map_gender <- renderLeaflet({
                                     ifelse(map_gender()$subject_sex == "female", "#440154","gray")))
 
 })
+
 
 #age map
 
@@ -158,6 +161,8 @@ output$map_age <- renderLeaflet({
   
 
 })
+
+
 
 
 ```
@@ -212,10 +217,14 @@ checkboxGroupInput('race', label = h3("Select Race"),
 
 ```
 
-## Column
+## Row
 ```{r}
 leafletOutput('map_race')
+
+
 ```
+
+
 
 # Gender Breakdown
 

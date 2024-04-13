@@ -1,0 +1,17 @@
+subject_race,year,location,population
+white,2017,camden,4471
+black,2017,camden,30980
+white,2016,camden,4013
+black,2016,camden,32203
+white,2015,camden,3413
+black,2015,camden,32439
+white,2014,camden,3769
+black,2014,camden,33216
+white,2017,philly,548312
+black,2017,philly,648846
+white,2016,philly,550157
+black,2016,philly,648187
+white,2015,philly,557211
+black,2015,philly,645130
+white,2014,philly,560007
+black,2014,philly,646030

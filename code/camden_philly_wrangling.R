@@ -56,8 +56,15 @@ camden_clean <- camden |>
     subject_age >= 45 & subject_age < 55 ~ "45-54",
     subject_age >= 55 & subject_age < 65 ~ "55-64",
     subject_age >= 65 & subject_age < 75 ~ "65-74",
-    subject_age >= 75 ~ "75 and over"
-  )) |> 
+    subject_age >= 75 ~ "75 and over" )) |> 
+ mutate(subject_race = case_when(
+        subject_race == "black" ~ "black" ,
+        subject_race == "white" ~ "white" ,
+        subject_race == "asian/pacific islander" ~ "asian/pacific islander" ,
+        subject_race == "hispanic" ~ "hispanic" ,
+        subject_race == "other" ~ "other" ,
+        subject_race == "unknown" ~ "unknown" ,
+        is.na(subject_race) ~ "unknown" )) |> 
   relocate(age_group, .after = subject_age) |> 
   filter(date >= as.Date("2014-01-01") & date <= as.Date("2017-12-21")) |> 
   mutate(outcome_recode = case_when(
@@ -70,6 +77,7 @@ camden_clean <- camden |>
   select(-type) |> 
   mutate(location = "camden") |> 
   relocate(location, .after = lng)
+
 
 
 camden_bounds <- c(lat_min = 39.875, lat_max = 39.961,
@@ -89,8 +97,4 @@ saveRDS(camden_clean, file = "data/camden_clean.rds")
 camden_philly_clean <- rbind(camden_clean, philly_clean)
 
 saveRDS(camden_philly_clean, file = "data/camden_philly_clean.rds")
-
-
-
-
 
