@@ -1,0 +1,27 @@
+---
+title: "Exploring Police Stop Data in Camden & Philly"
+author: "Libby Doyle & Charlotte Pierce"
+format: 
+  revealjs:
+    theme: solarized
+---
+
+## Research Question
+
+We were interested in understanding how police traffic stops varied by different demographic groups and identities. Camden and Philadelphia, adjacent cities separated by the Delaware River, provided an opportunity for comparison since they both had precise location data.
+
+Our goal with this project is to help both policymakers and citizens understand what policing looks like in their communities. Accountability in policing is crucial, and information empowers us to act when we can see how inequities manifest, especially between different racial identities.
+
+## Data
+
+We sourced data from the [Stanford Open Policing Project](https://openpolicing.stanford.edu), which has both state- and city-wide data on traffic stops.
+
+![](pics/stanford.png)
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
