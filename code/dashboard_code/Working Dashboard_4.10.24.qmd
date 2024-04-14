@@ -16,7 +16,6 @@ library(leaflet)
 library(viridis)
 
 combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
-camden_race <- readRDS(here::here("data", "camden_race.rds"))
 
 
 ```

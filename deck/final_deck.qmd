@@ -20,33 +20,79 @@ We sourced data from the [Stanford Open Policing Project](https://openpolicing.s
 
 ![](pics/stanford.png)
 
+## Camden Policy Change
+
+::: columns
+::: {.column width="60%"}
+In 2012, Camden disbanded its police department to root out corruption and give the city a clean slate to reduce its high rates of violent crime.
+
+Our analysis spans from 2014-2017, after the new police department was built with a more community-focused approach
+:::
+
+::: {.column width="40%"}
+![](pics/camden_cops){fig-align="center" width="500"} ![](pics/camden_community.png){fig-align="center" width="500"}
+:::
+:::
+
 # Maps of Police Stops in Camden and Philadelphia
+
+## Police Stops by Outcome, Gender, and Age
+
+::: columns
+::: {.column width="33%"}
+![Arrests in Philly and Camden](pics/philly_camden_arrest.png){width="427"}
+:::
+
+::: {.column width="33%"}
+![Male (teal) and female (purple) stops in Camden](pics/camden_gender.png){width="427"}
+:::
+
+::: {.column width="33%"}
+![Ages 18-24 (green) and 55-64 (blue) in Philly](pics/philly_1824_5564.png){width="448"}
+:::
+:::
+
+## Police Stops in Philly and Camden by Race
+
+::: columns
+::: {.column width="50%"}
+![Black stops](pics/philly_camden_black.png){width="238"}
+
+![Black and White stops](pics/philly_camden_black_white.png){width="227"}
+:::
+
+::: {.column width="50%"}
+![White stops](pics/philly_camden_white.png){width="227"}
+
+![White and Hispanic stops](pics/philly_camden_hispanic_white.png){width="221"}
+:::
+:::
 
 # Black-White Disparities in Police Stops
 
-## Stacked Bars
+## Share of Stops by Race/Ethnicity
 
-:::: {.columns}
+::: columns
 ::: {.column width="50%"}
-![](pics/camden_stack.png)
+![In **Camden**, Black people make up about 43% of the population but about 47% of stops. Hispanic people make up around 39% of the population and have proportional traffic stop rates](pics/camden_stack.png)
 :::
 
 ::: {.column width="50%"}
-![](pics/philly_stack.png)
+![In **Philly**, Black people make up about 41% of the population but 60-70% of stops, while White people make up about 36% of the population but less than a quarter of stops.](pics/philly_stack.png)
 :::
-::::
+:::
 
-## Line Charts
 
-:::: {.columns}
+## Stops of Black and White Drivers per 100 People
+
+::: columns
 ::: {.column width="50%"}
-![](pics/camden_line.png)
+![In **Camden**, the black-white disparity between police stops has decreased over time.](pics/camden_line.png)
 :::
 
-:::{.column width="50%"}
-![](pics/philly_line.png)
+::: {.column width="50%"}
+![But in **Philly**, the disparity has grown.](pics/philly_line.png)
 :::
-
-::::
+:::
 
 # We made a dashboard!
