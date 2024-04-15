@@ -85,7 +85,6 @@ black_stops_philly <- camden_philly_clean |>
   filter(subject_race == "black") |> 
   select(lat, lng)
   
-#eric's code applied
 bp_stops <- geo_to_h3(black_stops_philly)
 
 tbl <- table(bp_stops) %>%
