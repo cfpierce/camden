@@ -1,22 +1,35 @@
 ---
-title: "Exploring Police Stop Data in Camden & Philly"
+title: "Exploring Police Stop Data in Camden & Philadelphia"
 author: "Libby Doyle & Charlotte Pierce"
 format: 
   revealjs:
     theme: solarized
 ---
 
+```{r}
+{results="hide"}
+library(tidyverse)
+library(here)
+library(h3)
+library(RColorBrewer) 
+library(leaflet)
+library(sf)
+
+camden_philly_clean <- readRDS(here::here("data", "camden_philly_clean.rds"))
+
+```
+
 ## Research Question
 
 ::: incremental
--   We were interested in understanding how police traffic stops varied by different demographic groups and identities. Camden and Philadelphia, adjacent cities separated by the Delaware River, provided an opportunity for comparison since they both had precise location data.
+-   **RQ:** How do police traffic stops and outcomes vary by demographic groups (i.e. race/ethnicity, age, gender) in two geographically adjacent cities?
 
--   Our goal with this project is to help both policymakers and citizens understand what policing looks like in their communities. Accountability in policing is crucial, and information empowers us to act when we can see how inequities manifest, especially between different racial identities.
+-   **Goal:** Help both policymakers and citizens understand what policing looks like in their communities. Accountability in policing is crucial, and information empowers us to act when we can see how inequities manifest, especially between different racial identities.
 :::
 
-## Data
+## Data & Process
 
-We sourced data from the [Stanford Open Policing Project](https://openpolicing.stanford.edu), which has both state- and city-wide data on traffic stops.
+We sourced data from the [Stanford Open Policing Project](https://openpolicing.stanford.edu)
 
 ![](pics/stanford.png)
 
@@ -68,13 +81,13 @@ Our analysis spans from 2014-2017, after the new police department was built wit
 :::
 :::
 
-# Black-White Disparities in Police Stops
+# A Deeper Dive into Racial Disparities in Police Stops
 
 ## Share of Stops by Race/Ethnicity
 
 ::: columns
 ::: {.column width="50%"}
-![In **Camden**, Black people make up about 43% of the population but about 47% of stops. Hispanic people make up around 39% of the population and have proportional traffic stop rates](pics/camden_stack.png)
+![In **Camden**, Black people make up about 43% of the population but about 47% of stops. White people make up just 5% of the population and are overrepresented in traffic stops.](pics/camden_stack.png)
 :::
 
 ::: {.column width="50%"}
@@ -82,8 +95,7 @@ Our analysis spans from 2014-2017, after the new police department was built wit
 :::
 :::
 
-
-## Stops of Black and White Drivers per 100 People
+## Stops of Black and White Drivers per 100 Population
 
 ::: columns
 ::: {.column width="50%"}
@@ -94,5 +106,120 @@ Our analysis spans from 2014-2017, after the new police department was built wit
 ![But in **Philly**, the disparity has grown.](pics/philly_line.png)
 :::
 :::
+
+
+# Stops of Black Drivers in Philadelphia 
+```{r}
+stops_philly <- camden_philly_clean |>
+  filter(location == "philly") |> 
+  filter(subject_race == "black") |> 
+  select(lat, lng)
+  
+traffic_stops <- geo_to_h3(stops_philly)
+
+tbl <- table(traffic_stops) %>%
+  tibble::as_tibble()
+
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
+
+
+color_palette <- brewer.pal(30, "Blues")
+
+leaflet(data = hexagons) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
+              fillOpacity = 0.7, 
+              weight = 1,
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+
+```
+
+# Stops of White Drivers in Philadelphia 
+```{r}
+stops_philly <- camden_philly_clean |>
+  filter(location == "philly") |> 
+  filter(subject_race == "white") |> 
+  select(lat, lng)
+
+traffic_stops <- geo_to_h3(stops_philly)
+
+tbl <- table(traffic_stops) %>%
+  tibble::as_tibble()
+
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
+
+color_palette <- brewer.pal(30, "Blues")
+
+# Create leaflet map
+leaflet(data = hexagons) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
+              fillOpacity = 0.7, 
+              weight = 1,
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+```
+
+# Stops of Black Drivers in Camden
+```{r}
+stops_camden <- camden_philly_clean |>
+  filter(location == "camden") |> 
+  filter(subject_race == "black") |> 
+  select(lat, lng)
+
+traffic_stops <- geo_to_h3(stops_camden)
+
+tbl <- table(traffic_stops) %>%
+  tibble::as_tibble()
+
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
+
+color_palette <- brewer.pal(30, "Blues")
+
+# Create leaflet map
+leaflet(data = hexagons) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
+              fillOpacity = 0.7, 
+              weight = 1,
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+```
+
+# Stops of White Drivers in Camden
+
+```{r}
+stops_camden <- camden_philly_clean |>
+  filter(location == "camden") |> 
+  filter(subject_race == "white") |> 
+  select(lat, lng)
+
+traffic_stops <- geo_to_h3(stops_camden)
+
+tbl <- table(traffic_stops) %>%
+  tibble::as_tibble()
+
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
+
+color_palette <- brewer.pal(30, "Blues")
+
+# Create leaflet map
+leaflet(data = hexagons) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
+              fillOpacity = 0.7, 
+              weight = 1,
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+```
 
 # We made a dashboard!
