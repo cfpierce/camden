@@ -13,6 +13,7 @@ library(sf)
 camden_philly_clean <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
 # 
+
 # RACIAL BREAKDOWN TAB ################################################################################################################################################################################
 
 ## Stacked Bar Charts
@@ -75,9 +76,9 @@ camden_stack
 ## Black-White Analysis Tab ########################################################################################################################################################################
 
 ## Hexagons
-camden_philly_clean  <-  readRDS(here::here("data", "camden_philly_clean.rds"))
 
 ## PHILLY ############ 
+
 # just black stops 
 black_stops_philly <- camden_philly_clean |>
   filter(location == "philly") |> 
@@ -98,16 +99,16 @@ p <- hexagons %>%
   ggplot() +
   geom_sf(aes(fill = stops), alpha = 1) +
   scale_fill_gradientn(colors = brewer.pal(5, "Blues"))
-115 
+
 # Create leaflet map
 
-color_palette <- brewer.pal(20, "Blues")
+color_palette <- brewer.pal(30, "Blues")
 
 # Create leaflet map
 leaflet(data = hexagons) %>%
   addProviderTiles("OpenStreetMap.Mapnik") %>%
   addPolygons(data = hexagons, 
-              fillColor = ~color_palette[cut(stops, breaks = 20)],
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
               fillOpacity = 0.7, 
               weight = 1,
               color = "black",
@@ -238,3 +239,34 @@ ggplot(philly_stop, aes(color = subject_race, y=per_100, x=year)) +
   labs(x = "Year", y = "Stops per 100 People", title = "Stops of Black and White Drivers in Philadelphia per 100 People",  color = "Race/Ethnicity") +
   scale_fill_viridis_d() +  
   theme_minimal()
+
+
+#test code from dashboard #######
+
+# code to generate hexagons
+stops_race <- reactive({
+  combined_dashboard %>%
+    filter(location == input$location) %>% 
+    filter(year >= input$years[1] & year <= input$years[2]) %>% 
+    filter(subject_race == input$race) %>% 
+    select(lat, lng) %>% 
+    geo_to_h3() %>% 
+    table() %>%
+    tibble::as_tibble() %>%
+    { h3_to_geo_boundary_sf(.$bp_stops) %>% dplyr::mutate(index = .$bp_stops, stops = .$n) }
+})
+
+# Define color palette
+color_palette <- brewer.pal(20, "Blues")
+
+# Create leaflet map
+output$hexagon_map <- renderLeaflet({
+  leaflet(data = stops_race()) %>%
+    addProviderTiles("OpenStreetMap.Mapnik") %>%
+    addPolygons(data = stops_race(), 
+                fillColor = ~color_palette[cut(stops, breaks = 20)],
+                fillOpacity = 0.7, 
+                weight = 1,
+                color = "black",
+                popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+})

@@ -163,33 +163,6 @@ output$map_age <- renderLeaflet({
 
 })
 
-# code to generate hexagons
-stops_race <- reactive({
-  combined_dashboard %>%
-    filter(location == input$location) %>% 
-    filter(year >= input$years[1] & year <= input$years[2]) %>% 
-    filter(subject_race == input$race) %>% 
-    select(lat, lng) %>% 
-    geo_to_h3() %>% 
-    table() %>%
-    tibble::as_tibble() %>%
-    { h3_to_geo_boundary_sf(.$bp_stops) %>% dplyr::mutate(index = .$bp_stops, stops = .$n) }
-})
-
-# Define color palette
-color_palette <- brewer.pal(20, "Blues")
-
-# Create leaflet map
-output$hexagon_map <- renderLeaflet({
-  leaflet(data = stops_race()) %>%
-    addProviderTiles("OpenStreetMap.Mapnik") %>%
-    addPolygons(data = stops_race(), 
-                fillColor = ~color_palette[cut(stops, breaks = 20)],
-                fillOpacity = 0.7, 
-                weight = 1,
-                color = "black",
-                popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
-})
 
 ```
 
@@ -246,25 +219,6 @@ checkboxGroupInput('race', label = h3("Select Race"),
 ## Row
 ```{r}
 leafletOutput('map_race')
-
-
-```
-
-
-# Hexagon maps
-## {.sidebar}
-```{r}
-checkboxGroupInput('race', label = h3("Select Race"),
-                                      choices = list("Black" = "black",
-                                                     "White" = "white"),
-                                      selected = "black")
-
-```
-
-## Row
-```{r}
-leafletOutput('hexagon_map')
-
 
 
 ```
