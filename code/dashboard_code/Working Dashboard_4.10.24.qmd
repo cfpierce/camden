@@ -163,8 +163,6 @@ output$map_age <- renderLeaflet({
 
 })
 
-# Assuming black_stops_philly is a reactive dataset based on user input for year, location, and race
-
 # code to generate hexagons
 stops_race <- reactive({
   combined_dashboard %>%

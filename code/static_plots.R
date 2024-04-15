@@ -77,7 +77,7 @@ camden_stack
 ## Hexagons
 camden_philly_clean  <-  readRDS(here::here("data", "camden_philly_clean.rds"))
 
-## PHILLY ############
+## PHILLY ############ 
 # just black stops 
 black_stops_philly <- camden_philly_clean |>
   filter(location == "philly") |> 
@@ -98,7 +98,7 @@ p <- hexagons %>%
   ggplot() +
   geom_sf(aes(fill = stops), alpha = 1) +
   scale_fill_gradientn(colors = brewer.pal(5, "Blues"))
-
+115 
 # Create leaflet map
 
 color_palette <- brewer.pal(20, "Blues")
