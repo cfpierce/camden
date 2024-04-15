@@ -14,6 +14,8 @@ library(shiny)
 library(sf)
 library(leaflet)
 library(viridis)
+library(h3)
+library(RColorBrewer)
 
 combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
@@ -44,7 +46,7 @@ sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(201
 map_df <- reactive({
     combined_dashboard |> 
     filter(location == input$location) |> 
-       filter(date >= input$years[1] & year <= input$years[2]) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
        filter(outcome_recode == input$outcome) |> 
       filter(!is.na(lng) & !is.na(lat))  |> 
     
@@ -161,8 +163,35 @@ output$map_age <- renderLeaflet({
 
 })
 
+# Assuming black_stops_philly is a reactive dataset based on user input for year, location, and race
 
+# code to generate hexagons
+stops_race <- reactive({
+  combined_dashboard %>%
+    filter(location == input$location) %>% 
+    filter(year >= input$years[1] & year <= input$years[2]) %>% 
+    filter(subject_race == input$race) %>% 
+    select(lat, lng) %>% 
+    geo_to_h3() %>% 
+    table() %>%
+    tibble::as_tibble() %>%
+    { h3_to_geo_boundary_sf(.$bp_stops) %>% dplyr::mutate(index = .$bp_stops, stops = .$n) }
+})
 
+# Define color palette
+color_palette <- brewer.pal(20, "Blues")
+
+# Create leaflet map
+output$hexagon_map <- renderLeaflet({
+  leaflet(data = stops_race()) %>%
+    addProviderTiles("OpenStreetMap.Mapnik") %>%
+    addPolygons(data = stops_race(), 
+                fillColor = ~color_palette[cut(stops, breaks = 20)],
+                fillOpacity = 0.7, 
+                weight = 1,
+                color = "black",
+                popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+})
 
 ```
 
@@ -223,6 +252,24 @@ leafletOutput('map_race')
 
 ```
 
+
+# Hexagon maps
+## {.sidebar}
+```{r}
+checkboxGroupInput('race', label = h3("Select Race"),
+                                      choices = list("Black" = "black",
+                                                     "White" = "white"),
+                                      selected = "black")
+
+```
+
+## Row
+```{r}
+leafletOutput('hexagon_map')
+
+
+
+```
 
 
 # Gender Breakdown
