@@ -5,4 +5,4 @@ format: gfm
 
 # Executive Summary
 
-Brilliance
+Research Question
