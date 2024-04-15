@@ -163,6 +163,47 @@ output$map_age <- renderLeaflet({
 
 })
 
+# code to generate hexagons
+stops_race <- reactive({
+  
+  stops_ <- combined_dashboard %>%
+    filter(location %in% input$location) %>% 
+    filter(year >= input$years[1] & year <= input$years[2]) %>% 
+    filter(subject_race %in% input$race) %>% 
+    select(lat, lng) %>% 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+    st_set_crs(4326) |> 
+    geo_to_h3() %>% 
+    table() %>%
+    tibble::as_tibble() %>%
+    rename("bp_stops" = ".") 
+  
+  bp_stops <- geo_to_h3(stops_)
+
+  tbl <- table(bp_stops) %>%
+    tibble::as_tibble()
+
+  hexagons <- h3_to_geo_boundary_sf(tbl$bp_stops)  |> 
+    dplyr::mutate(index = tbl$bp_stops, stops = tbl$n)
+  
+  hexagons  
+    
+})
+
+  color_palette <- brewer.pal(20, "Blues")
+
+# Create leaflet map
+output$hexagon_map <- renderLeaflet({
+  leaflet(stops_race()) %>%
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addPolygons(fillColor = ~color_palette[cut(stops, breaks = 20)],
+                fillOpacity = 0.7, 
+                weight = 1,
+                color = subject_race(),
+                popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+})
+
 
 ```
 
@@ -219,6 +260,24 @@ checkboxGroupInput('race', label = h3("Select Race"),
 ## Row
 ```{r}
 leafletOutput('map_race')
+
+
+```
+
+# test 
+## {.sidebar}
+```{r}
+checkboxGroupInput('race', label = h3("Select Race"),
+                                      choices = list("Asian/Pacific Islander" = "asian/pacific islander",
+                                                     "Black" = "black",
+                                                     "Hispanic" = "hispanic",
+                                                     "White" = "white"),
+                                      selected = "asian/pacific islander")
+
+```
+
+```{r}
+leafletOutput('hexagon_map')
 
 
 ```

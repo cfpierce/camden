@@ -80,26 +80,20 @@ camden_stack
 ## PHILLY ############ 
 
 # just black stops 
-black_stops_philly <- camden_philly_clean |>
+stops_philly <- camden_philly_clean |>
   filter(location == "philly") |> 
   filter(subject_race == "black") |> 
   select(lat, lng)
   
-bp_stops <- geo_to_h3(black_stops_philly)
+traffic_stops <- geo_to_h3(stops_philly)
 
-tbl <- table(bp_stops) %>%
+tbl <- table(traffic_stops) %>%
   tibble::as_tibble()
 
-hexagons <- h3_to_geo_boundary_sf(tbl$bp_stops)  |> 
-  dplyr::mutate(index = tbl$bp_stops, stops = tbl$n)
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
 
-# Plot using ggplot2
-p <- hexagons %>%
-  ggplot() +
-  geom_sf(aes(fill = stops), alpha = 1) +
-  scale_fill_gradientn(colors = brewer.pal(5, "Blues"))
 
-# Create leaflet map
 
 color_palette <- brewer.pal(30, "Blues")
 
@@ -115,87 +109,90 @@ leaflet(data = hexagons) %>%
 
 
 # just white stops 
-white_stops_philly <- camden_philly_clean |>
+stops_philly <- camden_philly_clean |>
   filter(location == "philly") |> 
   filter(subject_race == "white") |> 
   select(lat, lng)
 
-#eric's code applied
-wp_stops <- geo_to_h3(white_stops_philly)
+traffic_stops <- geo_to_h3(stops_philly)
 
-tbl <- table(wp_stops) %>%
+tbl <- table(traffic_stops) %>%
   tibble::as_tibble()
 
-hexagons_2 <- h3_to_geo_boundary_sf(tbl$wp_stops) %>%
-  dplyr::mutate(index = tbl$wp_stops, stops = tbl$n)
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
 
-hexagons %>%
-  ggplot() +
-  geom_sf(aes(fill=stops), alpha=1)
+color_palette <- brewer.pal(30, "Blues")
 
-n_colors <- 10
-
-color_palette <- colorNumeric(palette = "Blues", domain = hexagons_2$stops, n = n_colors)
-
-
-# Create a leaflet map with chloropleth-like coloring
-leaflet() %>%
+# Create leaflet map
+leaflet(data = hexagons) %>%
   addProviderTiles("OpenStreetMap.Mapnik") %>%
-  addPolygons(data = hexagons_2, 
-              fillColor = ~color_palette(stops),
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
               fillOpacity = 0.7, 
               weight = 1,
-              color = "gray",
-              popup = ~as.character(stops))
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
 
 
+## CAMDEN ############ 
 
-
-
-## CAMDEN ######################
-
-# just black arrests 
-black_arrests_camden <- camden_philly_clean |>
+# just black stops 
+stops_camden <- camden_philly_clean |>
   filter(location == "camden") |> 
   filter(subject_race == "black") |> 
   select(lat, lng)
 
-view(black_arrests_camden)
+traffic_stops <- geo_to_h3(stops_camden)
 
-#eric's code applied
-bc_arrests <- geo_to_h3(black_arrests_camden)
-
-tbl <- table(bc_arrests) %>%
+tbl <- table(traffic_stops) %>%
   tibble::as_tibble()
 
-hexagons <- h3_to_geo_boundary_sf(tbl$bc_arrests) %>%
-  dplyr::mutate(index = tbl$bc_arrests, arrests = tbl$n)
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
 
-hexagons %>%
-  ggplot() +
-  geom_sf(aes(fill=arrests), alpha=1)
+color_palette <- brewer.pal(30, "Blues")
+
+# Create leaflet map
+leaflet(data = hexagons) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
+              fillOpacity = 0.7, 
+              weight = 1,
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+
 
 # just white stops 
-white_arrests_camden <- camden_philly_clean |>
+stops_camden <- camden_philly_clean |>
   filter(location == "camden") |> 
   filter(subject_race == "white") |> 
   select(lat, lng)
 
-view(white_arrests_camden)
+traffic_stops <- geo_to_h3(stops_camden)
 
-#eric's code applied
-wc_arrests <- geo_to_h3(white_arrests_camden)
-
-tbl <- table(wc_arrests) %>%
+tbl <- table(traffic_stops) %>%
   tibble::as_tibble()
 
-hexagons <- h3_to_geo_boundary_sf(tbl$wc_arrests) %>%
-  dplyr::mutate(index = tbl$wc_arrests, arrests = tbl$n)
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
 
-hexagons %>%
-  ggplot() +
-  geom_sf(aes(fill=arrests), alpha=1)
-  
+color_palette <- brewer.pal(30, "Blues")
+
+# Create leaflet map
+leaflet(data = hexagons) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
+              fillOpacity = 0.7, 
+              weight = 1,
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+
+
+
+
 
 ## stops for black and white drivers
 
