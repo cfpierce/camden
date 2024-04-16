@@ -1,5 +1,6 @@
-## Code to Create Additional Race Charts ##
-
+# File 2: Create Static Plots, not included on dashboard
+#  Authors: Libby Doyle & Charlotte Pierce
+# Updated: 15 Apr 2024
 
 
 # load packages
@@ -9,6 +10,7 @@ library(h3)
 library(RColorBrewer) 
 library(leaflet)
 library(sf)
+library(readxl)
 
 camden_philly_clean <- readRDS(here::here("data", "camden_philly_clean.rds"))
 
@@ -77,7 +79,7 @@ camden_stack
 
 ## Hexagons
 
-## PHILLY ############ 
+## PHILLY  
 
 # just black stops 
 stops_philly <- camden_philly_clean |>
@@ -135,7 +137,7 @@ leaflet(data = hexagons) %>%
               popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
 
 
-## CAMDEN ############ 
+## CAMDEN 
 
 # just black stops 
 stops_camden <- camden_philly_clean |>
@@ -190,14 +192,10 @@ leaflet(data = hexagons) %>%
               color = "black",
               popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
 
-
-
-
-
 ## stops for black and white drivers
 
 #load population file
-census_pop_data <- read_csv(here::here("data", "census_pop_data.csv"))
+census_pop_data <- read_excel(here::here("data", "census_pop_data.xls"))
 
 bw_stop_count <- camden_philly_clean |> 
   select(location, year, subject_race) |> 
@@ -236,33 +234,3 @@ ggplot(philly_stop, aes(color = subject_race, y=per_100, x=year)) +
   scale_fill_viridis_d() +  
   theme_minimal()
 
-
-#test code from dashboard #######
-
-# code to generate hexagons
-stops_race <- reactive({
-  combined_dashboard %>%
-    filter(location == input$location) %>% 
-    filter(year >= input$years[1] & year <= input$years[2]) %>% 
-    filter(subject_race == input$race) %>% 
-    select(lat, lng) %>% 
-    geo_to_h3() %>% 
-    table() %>%
-    tibble::as_tibble() %>%
-    { h3_to_geo_boundary_sf(.$bp_stops) %>% dplyr::mutate(index = .$bp_stops, stops = .$n) }
-})
-
-# Define color palette
-color_palette <- brewer.pal(20, "Blues")
-
-# Create leaflet map
-output$hexagon_map <- renderLeaflet({
-  leaflet(data = stops_race()) %>%
-    addProviderTiles("OpenStreetMap.Mapnik") %>%
-    addPolygons(data = stops_race(), 
-                fillColor = ~color_palette[cut(stops, breaks = 20)],
-                fillOpacity = 0.7, 
-                weight = 1,
-                color = "black",
-                popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
-})

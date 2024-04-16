@@ -1,3 +1,8 @@
+## File 1: Wrangling Camden & Philly Data
+# Authors: Libby Doyle & Charlotte Pierce
+# Updated: 15 Apr 2024
+
+
 library(tidyverse)
 library(here)
 
@@ -6,7 +11,7 @@ camden <- readRDS(here::here("data", "camden.rds"))
 
 philly <-  readRDS(here::here("data", "philadelphia.rds"))
 
-unique(camden_philly_clean$age_group)
+#unique(camden_philly_clean$age_group)
 
 #philly wrangling
 philly_clean <- philly |> 

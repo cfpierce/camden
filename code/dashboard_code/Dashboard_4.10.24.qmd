@@ -1,0 +1,263 @@
+---
+title: "Dashboard Maps"
+author: "Charlotte & Libby"
+format: dashboard
+theme: united
+server: shiny
+---
+
+```{r}
+#| context: setup
+
+library(tidyverse)
+library(shiny)
+library(sf)
+library(leaflet)
+library(viridis)
+library(h3)
+library(RColorBrewer)
+
+combined_dashboard <- readRDS(here::here("data", "camden_philly_clean.rds"))
+
+
+```
+
+#  {.sidebar}
+
+```{r}
+
+checkboxGroupInput('location', label = h3("Pick Location"),
+                                        choices = list( "Camden" = "camden",
+                                                        "Philadelphia" = "philly"),
+                                        selected = "camden")
+
+
+sidebarPanel(sliderInput('years', 'Years', min = 2014, max = 2017, value = c(2016, 2017), sep = NULL))
+
+
+```
+
+
+```{r}
+#| context: server
+
+#outcome map
+
+map_df <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(outcome_recode == input$outcome) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+    
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_df(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                     color = ifelse(map_df()$outcome_recode == "warning", "#f89540",
+                                    ifelse(map_df()$outcome_recode == "citation", "#cc4778",
+                                                  ifelse(map_df()$outcome_recode == "arrest", "#0d0887", "gray"))))
+  
+
+})
+
+#race map
+
+map_race <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(subject_race == input$race) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map_race <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_race(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                     color = ifelse(map_race()$subject_race == "white", "#5ec962",
+                                    ifelse(map_race()$subject_race == "black", "#21918c",
+                                           ifelse(map_race()$subject_race == "hispanic", "#3b528b",
+                                                  ifelse(map_race()$subject_race == "asian/pacific islander", "#440154", "gray")))))
+  
+
+})
+
+
+
+#gender map
+
+map_gender <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(subject_sex == input$gender) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map_gender <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_gender(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                     color = ifelse(map_gender()$subject_sex == "male", "#21918c",
+                                    ifelse(map_gender()$subject_sex == "female", "#440154","gray")))
+
+})
+
+
+#age map
+
+map_age <- reactive({
+    combined_dashboard |> 
+    filter(location == input$location) |> 
+       filter(year >= input$years[1] & year <= input$years[2]) |> 
+       filter(age_group == input$age) |> 
+      filter(!is.na(lng) & !is.na(lat))  |> 
+     st_as_sf(coords = c('lng', 'lat')) |> 
+     st_set_crs(4326)
+  })
+  
+
+
+output$map_age <- renderLeaflet({
+  leaflet() |> 
+    addTiles() |> 
+    setView(lat = 39.9259, lng = -75.1196, zoom = 12)|> 
+    addCircleMarkers(data = map_age(), 
+                     radius = 0.25, 
+                     fillOpacity = 0.75,
+                      color = ifelse(map_age()$age_group == "18-24", "#5ec962",
+                                    ifelse(map_age()$age_group == "25-34", "#28ae80",
+                                           ifelse(map_age()$age_group == "35-44", "#21918c",
+                                                  ifelse(map_age()$age_group == "45-54", "#2c728e",
+                                                  ifelse(map_age()$age_group == "55-64", "#3b528b",
+                                                 ifelse(map_age()$age_group == "65-74", "#472d7b",     
+                                                 ifelse(map_age()$age_group == "75 and over", "#440154",  
+                                                   ifelse(map_age()$age_group == "Under 18", "#addc30",     
+                                                         "gray")))))))))
+  
+
+})
+
+
+```
+
+# Home
+
+## Row
+
+**Welcome to our dashboard!**
+
+## Row
+
+Going into this project, we were interested in understanding how police traffic stops varied by different demographic groups and identities. We sourced data from the [Stanford Open Policing Project](https://openpolicing.stanford.edu), which has both state- and city-wide data on traffic stops. Camden and Philadelphia, adjacent cities separated by the Delaware River, provided an opportunity for comparative analysis using maps that pinpoint stop location data by outcome, race, gender, and age.
+
+As you toggle through the dashboard, feel free to select any of the variables listed to understand the breakdowns along different demographic categories. Zooming in on the map may help clarify clusters of stops if you have selected multiple years or variables with a large concentration.
+
+Our goal with this dashboard is to help both policymakers and citizens understand what policing looks like in their communities. Accountability in policing is crucial, and information empowers us to act when we can see how inequities manifest, especially between different racial identities.
+
+**Note:** When exploring Philadelphia data, please note that there is only data available for "Arrest" and "No Outcome"
+
+# Outcome of Stop
+
+## {.sidebar}
+```{r}
+
+
+checkboxGroupInput('outcome',label = h3("Pick Outcome"),
+                                      choices = list("Arrest" = "arrest",
+                                                     "Citation" = "citation",
+                                                     "No outcome" = "no outcome",
+                                                      "Warning" = "warning"),
+                                      selected = "arrest")
+                                                     
+```
+
+## Column
+```{r}
+leafletOutput('map')
+```
+
+# Racial Breakdown
+
+## {.sidebar}
+```{r}
+checkboxGroupInput('race', label = h3("Select Race"),
+                                      choices = list("Asian/Pacific Islander" = "asian/pacific islander",
+                                                     "Black" = "black",
+                                                     "Hispanic" = "hispanic",
+                                                     "White" = "white"),
+                                      selected = "asian/pacific islander")
+
+```
+
+## Row
+```{r}
+leafletOutput('map_race')
+
+
+```
+
+
+# Gender Breakdown
+
+## {.sidebar}
+```{r}
+checkboxGroupInput('gender', label = h3("Select Gender"),
+                                      choices = list("Female" = "female",
+                                                     "Male" = "male"),
+                                      selected = "female")
+
+
+```
+
+## Column
+```{r}
+leafletOutput('map_gender')
+```
+
+# Age Breakdown
+
+## {.sidebar}
+```{r}
+
+checkboxGroupInput('age', label = h3("Select Age Group"),
+                                      choices = list("Under 18" = "Under 18",
+                                                     "18-24" = "18-24",
+                                                     "25-34" = "25-34",
+                                                     "35-44" = "35-44",
+                                                     "45-54" = "45-54",
+                                                     "55-64" = "55-64",
+                                                     "65-74" = "65-74",
+                                                     "75 and over" = "75 and over"),
+                                      selected = "Under 18")
+
+```
+
+## Column
+```{r}
+leafletOutput('map_age')
+```
