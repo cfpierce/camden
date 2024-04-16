@@ -21,6 +21,33 @@ We wrangled the data to match the following criteria:
 
 -   Limited the data to include only stops that occurred within the geographic bounds of Camden and Philadelphia
 
+** Codebook**
+
+Codebook will generate in a new tab!
+
+```{r}
+
+# load data
+library(dataReporter)
+camden_philly_clean <- readRDS(here::here("data", "camden_philly_clean.rds"))
+
+#codebook 
+
+attr(camden_philly_clean$date, "shortDescription") <- "The date of the stop, in YYYY-MM-DD format."
+attr(camden_philly_clean$year, "shortDescription") <- "The year of the stop, in YYYY format."
+attr(camden_philly_clean$lat, "shortDescription") <- "The latitude of the stop."
+attr(camden_philly_clean$lng, "shortDescription") <- "The longitude of the stop."
+attr(camden_philly_clean$location, "shortDescription") <- "City of stop"
+attr(camden_philly_clean$subject_age, "shortDescription") <- "The age of the stopped subject. When date of birth is given, we calculate the age based on the stop date."
+attr(camden_philly_clean$subject_race, "shortDescription") <- "The race of the stopped subject. Values are standardized to white, black, hispanic, asian/pacific islander, and other/unknown"
+attr(camden_philly_clean$subject_sex, "shortDescription") <- "The recorded sex of the stopped subject."
+attr(camden_philly_clean$outcome, "shortDescription") <- "The outcome of the stop."
+attr(camden_philly_clean$outcome_recode, "shortDescription") <- "The outcome of the stop where N/A entries are recoded as 'No outcome'."
+
+codebook <- makeCodebook(data = camden_philly_clean, replace = TRUE) 
+
+```
+
 **Research Question**
 
 How do police traffic stops and outcomes vary by demographic groups (i.e. race/ethnicity, age, gender) in two geographically adjacent cities?
@@ -142,7 +169,11 @@ ggplot(camden_stop, aes(color = subject_race, y=per_100, x=year)) +
   geom_text(aes(label = round(per_100, 0)), vjust = -1, hjust = 0.5, size = 3) + 
   labs(x = "Year", y = "Stops per 100 People", title = "Stops of Black and White Drivers in Camden per 100 People",  color = "Race/Ethnicity") +
   scale_fill_viridis_d() +  
-  theme_minimal()
+  theme_minimal() +
+  guides(color = FALSE) +
+  annotate(geom = "text", x = 2014.40, y = 155, label = "Black Drivers", color = "black", size = 3) +
+  annotate(geom = "text", x = 2014.25, y = 40, label = "White Drivers", color = "black", size = 3)
+
 ```
 
 *Interactive Maps Using Uber's H3 Package*
