@@ -9,9 +9,21 @@ format: gfm
 
 This project utilizes data collected by the Stanford Open Policing Project. The Open Policing Project is a national repository of police vehicle and pedestrian stops and searches. This project specifically examines traffic stops in Camden, New Jersey and Philadelphia, Pennsylvania. The data was pulled from each city's respective police department and cleaned by staff members at the Open Policing Project. The cleaned data file includes 195,100 traffic stops performed by Camden Police Department between April 2013 and January 2020, and 1,865,096 traffic stops performed by Philadelphia Police Department between December 2013 to April 2018. Each observation in this dataset represents a single traffic stop. Both datasets include information on the outcome of the stop, latitude and longitudinal data on where the stop occurred, and demographic data on the person stopped.
 
-We filtered the
+We wrangled the data to match the following criteria:
+
+-   Filtered to include just vehicular stops and to exclude pedestrian stops
+
+-   Filtered to include dates that overlapped across both jurisdictions, this includes the time frame of January 1, 2014 - December 31, 2017
+
+-   Recoded the raw age variables to match Census age groups
+
+-   Limited the data to include only stops that occurred within the geographic bounds of Camden and Philadelphia
 
 **Research Question**
+
+How do police traffic stops and outcomes vary by demographic groups (i.e. race/ethnicity, age, gender) in two geographically adjacent cities?
+
+Our goal is to help both policymakers and citizens understand what policing looks like in their communities. Accountability in policing is crucial, and information empowers us to act when we can see how inequities manifest, especially between different racial identities.
 
 **Methodology**
 
