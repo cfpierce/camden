@@ -222,4 +222,6 @@ leaflet(data = hexagons) %>%
               popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
 ```
 
+# Findings
+
 # We made a dashboard!
