@@ -66,3 +66,7 @@ We used Uber's hexagon package to visualize aggregate stops. This package was us
 -   White stops in Camden
 
 **Findings**
+
+Despite Camden's police department reform aimed at community-focused policing, we still found racial disparities in who they stopped relative to the population of different racial groups: Black people make up about 43% of the population but around 47% of stops. The disparities between Black and White people stopped reduced over time. However, the Camden results are skewed by a data reporting error in which Camden police record Hispanic people as White, non-Hispanic, inflating the number of White people reported in the data. Philadelphia showed more significant racial disparities in who was stopped compared to Camden: Black people make up about 41% of the population but 60-70% of stops, while White people make up about 36% of the population but less than a quarter of stops. The disparity between Black and White people stopped grew over time.
+
+The dashboard and hexagon maps are interactive and show concentration of traffic stops both overall and by different outcomes and demographic characteristics, but they are descriptive. While no analytical conclusions can be drawn from the maps alone, further analysis of neighborhood demographic characteristics and community relationships with policing would help in contextualizing stop data. With a better understanding of how traffic stops differ by neighborhood, policymakers can investigate how policing might be improved to reduce disparities.
