@@ -31,7 +31,7 @@ philly_clean <- philly |>
     subject_age >= 75 ~ "75 and over"
   )) |> 
   relocate(age_group, .after = subject_age) |> 
-  filter(date >= as.Date("2014-01-01") & date <= as.Date("2017-12-21")) |> 
+  filter(date >= as.Date("2014-01-01") & date <= as.Date("2017-12-31")) |> 
   mutate(outcome_recode = case_when(
     outcome == "arrest" ~ "arrest",
     is.na(outcome) ~ "no outcome"

@@ -27,4 +27,42 @@ Our goal is to help both policymakers and citizens understand what policing look
 
 **Methodology**
 
+*Dashboard with Maps*
+
+The first step of our analysis was to create an interactive dashboard to visualize traffic stops in both jurisdictions across demographic groups. We used a Quarto shiny file to render a dashboard with a general interactive sidebar that can be used to select a time frame in years and location of stops to view. The dashboard also includes the following tabs to allow for visualization of characteristics of individual stops:
+
+-   [Outcomes of Stops:]{.underline} arrests, citation, no outcome (i.e., person was let off), warning
+
+    -   Note: Philadelphia data only contains outcome information on arrests and no outcome from the stop
+
+-   [Race of Driver Stopped:]{.underline} Asian/Pacific Islander, Black, Hispanic, White
+
+    -   Note: We exclude other or unknown from this tab for ease of visualization
+
+-   [Gender of Driver Stopped:]{.underline} Female or Male
+
+    -   Note: We recognize that gender is not a binary, however, this is how the data was captured and reported on
+
+-   [Age of Driver:]{.underline} This dashboard includes buckets of age groups aligned with census outcomes
+
+*Static Visuals of Differences in Stops by Race/Ethnicity*
+
+In addition to developing a dashboard, we also created several visualizations to dive deeper into potential differences between racial and ethnic groups in both locations. To do this we created the following static:
+
+-   [Stacked bar charts:]{.underline} These stacked bar charts show the proportion of stops by race per year across both locations
+
+-   [Line charts:]{.underline} These line charts show the change in stops per 100 population for black and white drivers over time. This was calculated by dividing the number of stops per race by their overall population in that jurisdiction and multiplying it by 100.
+
+*Interactive Maps Using Uber's H3 Package*
+
+We used Uber's hexagon package to visualize aggregate stops. This package was used to create chloropleth maps of the following cross-tabulations over the full time period:
+
+-   Black stops in Philadelphia
+
+-   White stops in Philadelphia
+
+-   Black stops in Camden
+
+-   White stops in Camden
+
 **Findings**
