@@ -1,6 +1,8 @@
 ---
 title: "README"
 format: gfm
+echo: FALSE
+prefer-html: true
 ---
 
 # Executive Summary
@@ -47,11 +49,101 @@ The first step of our analysis was to create an interactive dashboard to visuali
 
 *Static Visuals of Differences in Stops by Race/Ethnicity*
 
-In addition to developing a dashboard, we also created several visualizations to dive deeper into potential differences between racial and ethnic groups in both locations. To do this we created the following static:
+In addition to developing a dashboard, we also created several visualizations to dive deeper into potential differences between racial and ethnic groups in both locations. To do this we created the following static plots:
 
 -   [Stacked bar charts:]{.underline} These stacked bar charts show the proportion of stops by race per year across both locations
 
+```{r, include=FALSE}
+
+library(tidyverse)
+library(here)
+library(h3)
+library(RColorBrewer) 
+library(leaflet)
+library(sf)
+library(readxl)
+
+camden_philly_clean <- readRDS(here::here("data", "camden_philly_clean.rds"))
+
+#percents wrangling
+race_pct <- camden_philly_clean |> 
+  select(location, year, subject_race) |> 
+  group_by(location, year) |> 
+  mutate(stops_per_year = n()) |> 
+  ungroup() |> 
+  group_by(location, year, subject_race) |> 
+  mutate(stops_per_race = n()) |> 
+  mutate(pct_race = stops_per_race/stops_per_year) |> 
+  distinct(subject_race, year, location, pct_race) |> 
+  mutate(pct_race = pct_race*100)
+
+
+camden_race <- race_pct |> 
+  filter(location == "camden") |> 
+  filter(subject_race != "unknown" & subject_race != "other")
+
+
+philly_race <- race_pct |> 
+  filter(location == "philly") |> 
+  filter(subject_race != "unknown" & subject_race != "other")
+
+
+# philly stacked bar
+philly_stack <- ggplot(philly_race, aes(fill=subject_race, y=pct_race, x=year)) + 
+  geom_bar(position="fill", stat="identity") + 
+  geom_text(aes(label = paste0(round(pct_race), "%")), 
+            position = position_fill(vjust = c(0.5, 0.5, 0.5, +2)), 
+            size = 3.25) +
+  labs(x = "Year", y = "Percentage", title = "Share of Stops in Philadelphia by Race/Ethnicity",  fill = "Race/Ethnicity") +
+  scale_fill_viridis_d() +  
+  theme_minimal() +
+  theme(axis.line.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title.y = element_blank())
+```
+
+```{r}
+philly_stack
+
+```
+
 -   [Line charts:]{.underline} These line charts show the change in stops per 100 population for black and white drivers over time. This was calculated by dividing the number of stops per race by their overall population in that jurisdiction and multiplying it by 100.
+
+```{r, include=FALSE}
+
+#load population file
+census_pop_data <- read_excel(here::here("data", "census_pop_data.xls"))
+
+bw_stop_count <- camden_philly_clean |> 
+  select(location, year, subject_race) |> 
+  filter(subject_race == "black" | subject_race == "white") |> 
+  group_by(subject_race, location, year) |> 
+  mutate(stops_per_race = n()) |> 
+  distinct(subject_race, year, location, stops_per_race) |> 
+  full_join(census_pop_data, by = c("subject_race", "location", "year")) |> 
+  mutate(
+    per_100 = (stops_per_race/population)*100) 
+
+# camden dataset
+camden_stop <- bw_stop_count |> 
+  filter(location == "camden")
+
+# philly dataset
+philly_stop <- bw_stop_count |> 
+  filter(location == "philly")
+```
+
+```{r}
+
+ggplot(camden_stop, aes(color = subject_race, y=per_100, x=year)) + 
+  geom_line() + 
+  geom_point() +
+  geom_text(aes(label = round(per_100, 0)), vjust = -1, hjust = 0.5, size = 3) + 
+  labs(x = "Year", y = "Stops per 100 People", title = "Stops of Black and White Drivers in Camden per 100 People",  color = "Race/Ethnicity") +
+  scale_fill_viridis_d() +  
+  theme_minimal()
+```
 
 *Interactive Maps Using Uber's H3 Package*
 
@@ -64,6 +156,47 @@ We used Uber's hexagon package to visualize aggregate stops. This package was us
 -   Black stops in Camden
 
 -   White stops in Camden
+
+Below is a map of Black stops in Philadelphia
+
+```{r, include=FALSE}
+
+# just black stops 
+stops_philly <- camden_philly_clean |>
+  filter(location == "philly") |> 
+  filter(subject_race == "black") |> 
+  select(lat, lng)
+  
+traffic_stops <- geo_to_h3(stops_philly)
+
+tbl <- table(traffic_stops) %>%
+  tibble::as_tibble()
+
+hexagons <- h3_to_geo_boundary_sf(tbl$traffic_stops)  |> 
+  dplyr::mutate(index = tbl$traffic_stops, stops = tbl$n)
+
+
+
+color_palette <- brewer.pal(30, "Blues")
+
+
+```
+
+```{r}
+
+leaflet(data = hexagons) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>%
+  addPolygons(data = hexagons, 
+              fillColor = ~color_palette[cut(stops, breaks = 30)],
+              fillOpacity = 0.7, 
+              weight = 1,
+              color = "black",
+              popup = ~paste("<b>Stops:</b>",  format(stops, big.mark = ","))) 
+
+
+```
+
+
 
 **Findings**
 
